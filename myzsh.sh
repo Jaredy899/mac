@@ -17,8 +17,8 @@ installDepend() {
         fi
     done
 
-    # Automatically install Alacritty and Tabby
-    CASK_DEPENDENCIES=("alacritty" "tabby")
+    # Automatically install Alacritty, Kitty and Tabby
+    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby")
     echo "Installing terminal applications: ${CASK_DEPENDENCIES[*]}..."
     for cask in "${CASK_DEPENDENCIES[@]}"; do
         echo "Installing $cask..."
