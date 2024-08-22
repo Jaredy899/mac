@@ -34,6 +34,29 @@ installDepend() {
     fi
 }
 
+# Function to install MesloLGS Nerd Font
+installFont() {
+    FONT_NAME="MesloLGS Nerd Font Mono"
+    FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
+    FONT_DIR="$HOME/Library/Fonts"
+
+    if fc-list :family | grep -iq "$FONT_NAME"; then
+        echo "Font '$FONT_NAME' is already installed."
+    else
+        echo "Installing font '$FONT_NAME'..."
+        if wget -q --spider "$FONT_URL"; then
+            TEMP_DIR=$(mktemp -d)
+            wget -q --show-progress $FONT_URL -O "$TEMP_DIR"/"${FONT_NAME}".zip
+            unzip "$TEMP_DIR"/"${FONT_NAME}".zip -d "$FONT_DIR"
+            rm -rf "${TEMP_DIR}"
+            echo "'$FONT_NAME' installed successfully."
+        else
+            echo "Font '$FONT_NAME' not installed. Font URL is not accessible."
+            exit 1
+        fi
+    fi
+}
+
 # Function to link fastfetch and starship configurations
 linkConfig() {
     USER_HOME="$HOME"
