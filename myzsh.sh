@@ -46,9 +46,9 @@ installFont() {
         echo "Installing font '$FONT_NAME'..."
         if wget -q --spider "$FONT_URL"; then
             TEMP_DIR=$(mktemp -d)
-            wget -q --show-progress $FONT_URL -O "$TEMP_DIR"/"${FONT_NAME}".zip
-            unzip "$TEMP_DIR"/"${FONT_NAME}".zip -d "$FONT_DIR"
-            rm -rf "${TEMP_DIR}"
+            wget -q --show-progress "$FONT_URL" -O "$TEMP_DIR/${FONT_NAME}.zip"
+            unzip "$TEMP_DIR/${FONT_NAME}.zip" -d "$FONT_DIR"
+            rm -rf "$TEMP_DIR"
             echo "'$FONT_NAME' installed successfully."
         else
             echo "Font '$FONT_NAME' not installed. Font URL is not accessible."
@@ -109,7 +109,7 @@ update_zshrc() {
     ZSHRC_FILE="$USER_HOME/.zshrc"
 
     # Check if .zshrc file exists, if not create it
-    if [ ! -f "$ZSHRC_FILE"; then
+    if [ ! -f "$ZSHRC_FILE" ]; then
         touch "$ZSHRC_FILE"
     fi
 
