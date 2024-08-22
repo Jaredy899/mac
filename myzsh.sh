@@ -34,54 +34,35 @@ installDepend() {
     fi
 }
 
-# Function to install MesloLGS Nerd Font
-installFont() {
-    FONT_NAME="MesloLGS Nerd Font Mono"
-    FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
-    FONT_DIR="$HOME/Library/Fonts"
-
-    if fc-list :family | grep -iq "$FONT_NAME"; then
-        echo "Font '$FONT_NAME' is already installed."
-    else
-        echo "Installing font '$FONT_NAME'..."
-        if wget -q --spider "$FONT_URL"; then
-            TEMP_DIR=$(mktemp -d)
-            wget -q --show-progress $FONT_URL -O "$TEMP_DIR"/"${FONT_NAME}".zip
-            unzip "$TEMP_DIR"/"${FONT_NAME}".zip -d "$FONT_DIR"
-            rm -rf "${TEMP_DIR}"
-            echo "'$FONT_NAME' installed successfully."
-        else
-            echo "Font '$FONT_NAME' not installed. Font URL is not accessible."
-            exit 1
-        fi
-    fi
-}
-
 # Function to link fastfetch and starship configurations
 linkConfig() {
     USER_HOME="$HOME"
     CONFIG_DIR="$USER_HOME/.config"
 
-    # Link fastfetch configuration
+    # Fastfetch configuration
     FASTFETCH_CONFIG_DIR="$CONFIG_DIR/fastfetch"
     FASTFETCH_CONFIG="$FASTFETCH_CONFIG_DIR/config.jsonc"
-    
+
     if [ ! -d "$FASTFETCH_CONFIG_DIR" ]; then
         mkdir -p "$FASTFETCH_CONFIG_DIR"
     fi
 
-    if [ -f "$FASTFETCH_CONFIG" ]; then
-        ln -svf "$FASTFETCH_CONFIG" "$FASTFETCH_CONFIG" || {
-            echo "Failed to create symbolic link for fastfetch config.jsonc"
+    if [ ! -f "$FASTFETCH_CONFIG" ]; then
+        if [ -f "$GITPATH/config.jsonc" ]; then
+            ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
+                echo "Failed to create symbolic link for config.jsonc"
+                exit 1
+            }
+            echo "Linked config.jsonc to $FASTFETCH_CONFIG."
+        else
+            echo "config.jsonc not found in $GITPATH."
             exit 1
-        }
-        echo "Linked fastfetch config.jsonc to $FASTFETCH_CONFIG."
+        fi
     else
-        echo "config.jsonc not found in $FASTFETCH_CONFIG_DIR."
-        exit 1
+        echo "config.jsonc already exists in $FASTFETCH_CONFIG_DIR."
     fi
 
-    # Link starship configuration
+    # Starship configuration
     STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
     if [ -f "$GITPATH/starship.toml" ]; then
         ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
