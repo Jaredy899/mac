@@ -8,5 +8,5 @@ This script starts with installing ChrisTitusTech's my_bash script and adapting 
 
 To get started, open your terminal and run the following command:
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/myzsh.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/myzsh/myzsh.sh)"
 ```
