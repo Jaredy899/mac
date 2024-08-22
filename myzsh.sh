@@ -57,7 +57,7 @@ installFont() {
     fi
 }
 
-# Function to link fastfetch and starship configurations
+# Function to link or copy fastfetch and starship configurations
 linkConfig() {
     USER_HOME="$HOME"
     CONFIG_DIR="$USER_HOME/.config"
@@ -87,15 +87,19 @@ linkConfig() {
 
     # Starship configuration
     STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
-    if [ -f "$GITPATH/starship.toml" ]; then
-        ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
-            echo "Failed to create symbolic link for starship.toml"
+    if [ ! -f "$STARSHIP_CONFIG" ]; then
+        if [ -f "$GITPATH/starship.toml" ]; then
+            ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
+                echo "Failed to create symbolic link for starship.toml"
+                exit 1
+            }
+            echo "Linked starship.toml to $STARSHIP_CONFIG."
+        else
+            echo "starship.toml not found in $GITPATH."
             exit 1
-        }
-        echo "Linked starship.toml to $STARSHIP_CONFIG."
+        fi
     else
-        echo "starship.toml not found in $GITPATH."
-        exit 1
+        echo "starship.toml already exists in $CONFIG_DIR."
     fi
 }
 
@@ -105,7 +109,7 @@ update_zshrc() {
     ZSHRC_FILE="$USER_HOME/.zshrc"
 
     # Check if .zshrc file exists, if not create it
-    if [ ! -f "$ZSHRC_FILE" ]; then
+    if [ ! -f "$ZSHRC_FILE"; then
         touch "$ZSHRC_FILE"
     fi
 
