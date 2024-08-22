@@ -5,7 +5,7 @@ GITPATH="$(cd "$(dirname "$0")" && pwd)"
 
 # Function to install dependencies
 installDepend() {
-    # List of dependencies (tar removed)
+    # List of dependencies
     DEPENDENCIES=(zsh zsh-completions bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
     echo "Installing dependencies..."
