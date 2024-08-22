@@ -1,8 +1,11 @@
 #!/usr/bin/env zsh
 
+# Set the GITPATH variable to the directory where the script is located
+GITPATH="$(cd "$(dirname "$0")" && pwd)"
+
 # Function to install dependencies
 installDepend() {
-    # List of dependencies
+    # List of dependencies (tar removed)
     DEPENDENCIES=(zsh zsh-completions bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
     echo "Installing dependencies..."
@@ -54,40 +57,38 @@ installFont() {
     fi
 }
 
-# Function to create fastfetch config
-create_fastfetch_config() {
-    USER_HOME="$HOME"
-    CONFIG_DIR="$USER_HOME/.config/fastfetch"
-
-    echo "Setting up fastfetch configuration..."
-    if [ ! -d "$CONFIG_DIR" ]; then
-        mkdir -p "$CONFIG_DIR"
-    fi
-
-    if [ -f "config.jsonc" ]; then
-        cp config.jsonc "$CONFIG_DIR/config.jsonc"
-        echo "Fastfetch configuration copied to $CONFIG_DIR."
-    else
-        echo "Fastfetch configuration (config.jsonc) not found in the script directory."
-        exit 1
-    fi
-}
-
-# Function to install starship.toml
-install_starship_config() {
+# Function to link fastfetch and starship configurations
+linkConfig() {
     USER_HOME="$HOME"
     CONFIG_DIR="$USER_HOME/.config"
 
-    echo "Setting up starship configuration..."
-    if [ ! -d "$CONFIG_DIR" ]; then
-        mkdir -p "$CONFIG_DIR"
+    # Link fastfetch configuration
+    FASTFETCH_CONFIG="$CONFIG_DIR/fastfetch/config.jsonc"
+    if [ ! -d "$CONFIG_DIR/fastfetch" ]; then
+        mkdir -p "$CONFIG_DIR/fastfetch"
     fi
 
-    if [ -f "starship.toml" ]; then
-        cp starship.toml "$CONFIG_DIR/starship.toml"
-        echo "Starship configuration copied to $CONFIG_DIR."
+    if [ -f "$GITPATH/config.jsonc" ]; then
+        ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
+            echo "Failed to create symbolic link for fastfetch config.jsonc"
+            exit 1
+        }
+        echo "Linked fastfetch config.jsonc to $FASTFETCH_CONFIG."
     else
-        echo "Starship configuration (starship.toml) not found in the script directory."
+        echo "config.jsonc not found in $GITPATH."
+        exit 1
+    fi
+
+    # Link starship configuration
+    STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
+    if [ -f "$GITPATH/starship.toml" ]; then
+        ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
+            echo "Failed to create symbolic link for starship.toml"
+            exit 1
+        }
+        echo "Linked starship.toml to $STARSHIP_CONFIG."
+    else
+        echo "starship.toml not found in $GITPATH."
         exit 1
     fi
 }
@@ -98,7 +99,7 @@ update_zshrc() {
     ZSHRC_FILE="$USER_HOME/.zshrc"
 
     # Check if .zshrc file exists, if not create it
-    if [ ! -f "$ZSHRC_FILE"; then
+    if [ ! -f "$ZSHRC_FILE" ]; then
         touch "$ZSHRC_FILE"
     fi
 
@@ -125,8 +126,7 @@ update_zshrc() {
 # Run all functions
 installDepend
 installFont
-create_fastfetch_config
-install_starship_config
+linkConfig
 update_zshrc
 
 echo "Setup completed successfully."
