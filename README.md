@@ -1,6 +1,6 @@
 # Jared's Mac Installs
 
-This script starts with installing ChrisTitusTech's my_bash script and adapting it for Mac. It installs Alacritty and Tabby as the main Mac terminal cannot utilize the fonts correctly. 
+This script starts with installing ChrisTitusTech's mybash script and adapting it for Mac. It installs Alacritty and Tabby as the main Mac terminal cannot utilize the fonts correctly. 
 
 (I'm still working on how I want to implement the .zshrc file to incorporate much of CTT's .bashrc files but not all of it.)
 
