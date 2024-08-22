@@ -63,19 +63,21 @@ linkConfig() {
     CONFIG_DIR="$USER_HOME/.config"
 
     # Link fastfetch configuration
-    FASTFETCH_CONFIG="$CONFIG_DIR/fastfetch/config.jsonc"
-    if [ ! -d "$CONFIG_DIR/fastfetch" ]; then
-        mkdir -p "$CONFIG_DIR/fastfetch"
+    FASTFETCH_CONFIG_DIR="$CONFIG_DIR/fastfetch"
+    FASTFETCH_CONFIG="$FASTFETCH_CONFIG_DIR/config.jsonc"
+    
+    if [ ! -d "$FASTFETCH_CONFIG_DIR" ]; then
+        mkdir -p "$FASTFETCH_CONFIG_DIR"
     fi
 
-    if [ -f "$GITPATH/config.jsonc" ]; then
-        ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
+    if [ -f "$FASTFETCH_CONFIG" ]; then
+        ln -svf "$FASTFETCH_CONFIG" "$FASTFETCH_CONFIG" || {
             echo "Failed to create symbolic link for fastfetch config.jsonc"
             exit 1
         }
         echo "Linked fastfetch config.jsonc to $FASTFETCH_CONFIG."
     else
-        echo "config.jsonc not found in $GITPATH."
+        echo "config.jsonc not found in $FASTFETCH_CONFIG_DIR."
         exit 1
     fi
 
