@@ -45,7 +45,7 @@ else
 fi
 
 # Prompt to remove Dock items
-read -p "Do you want to remove Dock items using icon_remove.sh from your GitHub? (y/n): " remove_dock_script
+read -p "Do you want to remove Dock items? (y/n): " remove_dock_script
 if [[ "$remove_dock_script" == "y" || "$remove_dock_script" == "Y" ]]; then
     echo "Removing Dock items..."
     remove_dock_items
@@ -54,7 +54,7 @@ else
 fi
 
 # Prompt to add Dock items
-read -p "Do you want to add Dock items using icon_add.sh from your GitHub? (y/n): " add_dock_script
+read -p "Do you want to add Dock items from your Application? (y/n): " add_dock_script
 if [[ "$add_dock_script" == "y" || "$add_dock_script" == "Y" ]]; then
     echo "Adding Dock items..."
     add_dock_items
