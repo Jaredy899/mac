@@ -3,9 +3,6 @@
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "$0")" && pwd)"
 
-# GitHub URL base for config files
-GITHUB_URL_BASE="https://raw.githubusercontent.com/Jaredy899/mac/main"
-
 # Function to install dependencies
 installDepend() {
     # List of dependencies
@@ -38,28 +35,6 @@ installDepend() {
     fi
 }
 
-<<<<<<< HEAD
-=======
-# Function to download a file from GitHub if it doesn't exist locally
-download_or_use_local() {
-    local file_name=$1
-    local local_path=$2
-    local github_url="$GITHUB_URL_BASE/$file_name"
-
-    if [ ! -f "$local_path" ]; then
-        echo "$file_name not found locally, downloading from GitHub..."
-        if wget -q -O "$local_path" "$github_url"; then
-            echo "$file_name downloaded successfully."
-        else
-            echo "Failed to download $file_name from GitHub. Please check the URL or your network connection."
-            exit 1
-        fi
-    else
-        echo "$file_name found locally at $local_path."
-    fi
-}
-
->>>>>>> 0b1382e4e5087b2bed09502aa1a5eafa5125366c
 # Function to link or copy fastfetch and starship configurations
 linkConfig() {
     USER_HOME="$HOME"
@@ -73,22 +48,37 @@ linkConfig() {
         mkdir -p "$FASTFETCH_CONFIG_DIR"
     fi
 
-    # Download or use local config.jsonc
-    download_or_use_local "config.jsonc" "$GITPATH/config.jsonc"
-    ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
-        echo "Failed to create symbolic link for config.jsonc"
-        exit 1
-    }
-    echo "Linked config.jsonc to $FASTFETCH_CONFIG."
+    if [ ! -f "$FASTFETCH_CONFIG" ]; then
+        if [ -f "$GITPATH/config.jsonc" ]; then
+            ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
+                echo "Failed to create symbolic link for config.jsonc"
+                exit 1
+            }
+            echo "Linked config.jsonc to $FASTFETCH_CONFIG."
+        else
+            echo "config.jsonc not found in $GITPATH."
+            exit 1
+        fi
+    else
+        echo "config.jsonc already exists in $FASTFETCH_CONFIG_DIR."
+    fi
 
     # Starship configuration
     STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
-    download_or_use_local "starship.toml" "$GITPATH/starship.toml"
-    ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
-        echo "Failed to create symbolic link for starship.toml"
-        exit 1
-    }
-    echo "Linked starship.toml to $STARSHIP_CONFIG."
+    if [ ! -f "$STARSHIP_CONFIG" ]; then
+        if [ -f "$GITPATH/starship.toml" ]; then
+            ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
+                echo "Failed to create symbolic link for starship.toml"
+                exit 1
+            }
+            echo "Linked starship.toml to $STARSHIP_CONFIG."
+        else
+            echo "starship.toml not found in $GITPATH."
+            exit 1
+        fi
+    else
+        echo "starship.toml already exists in $CONFIG_DIR."
+    fi
 }
 
 # Function to update .zshrc
