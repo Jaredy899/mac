@@ -93,39 +93,38 @@ linkConfig() {
     fi
 }
 
-# Function to update .zshrc
-update_zshrc() {
+# Function to replace .zshrc with the one from the myzsh folder or download it from GitHub
+replace_zshrc() {
     USER_HOME="$HOME"
     ZSHRC_FILE="$USER_HOME/.zshrc"
+    ZSHRC_SOURCE="$GITPATH/.zshrc"
 
-    # Check if .zshrc file exists, if not create it
-    if [ ! -f "$ZSHRC_FILE" ]; then
-        touch "$ZSHRC_FILE"
+    # Backup existing .zshrc if it exists
+    if [ -f "$ZSHRC_FILE" ]; then
+        echo "Backing up existing .zshrc to .zshrc.backup..."
+        cp "$ZSHRC_FILE" "$ZSHRC_FILE.backup"
+        echo "Your previous .zshrc has been backed up as .zshrc.backup in your home directory."
     fi
 
-    # Add line to the top of the .zshrc file
-    AUTOCOMPLETE_LINE="source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
-    if ! grep -Fxq "$AUTOCOMPLETE_LINE" "$ZSHRC_FILE"; then
-        echo "$AUTOCOMPLETE_LINE" | cat - "$ZSHRC_FILE" > temp && mv temp "$ZSHRC_FILE"
-    fi
-
-    # Add lines to the bottom of the .zshrc file
-    STARSHIP_INIT="eval \"\$(starship init zsh)\""
-    ZOXIDE_INIT="eval \"\$(zoxide init zsh)\""
-    FASTFETCH="fastfetch"
-
-    for LINE in "$STARSHIP_INIT" "$ZOXIDE_INIT" "$FASTFETCH"; do
-        if ! grep -Fxq "$LINE" "$ZSHRC_FILE"; then
-            echo "$LINE" >> "$ZSHRC_FILE"
+    # Replace .zshrc with the one from myzsh folder or download from GitHub
+    if [ -f "$ZSHRC_SOURCE" ]; then
+        echo "Replacing .zshrc with the new version from $GITPATH..."
+        cp "$ZSHRC_SOURCE" "$ZSHRC_FILE"
+        echo ".zshrc replaced successfully."
+    else
+        echo ".zshrc not found in $GITPATH. Attempting to download from GitHub..."
+        if curl -fsSL "$GITHUB_BASE_URL/.zshrc" -o "$ZSHRC_FILE"; then
+            echo "Downloaded .zshrc from GitHub to $ZSHRC_FILE."
+        else
+            echo "Failed to download .zshrc from GitHub."
+            exit 1
         fi
-    done
-
-    echo ".zshrc updated."
+    fi
 }
 
 # Run all functions
 installDepend
 linkConfig
-update_zshrc
+replace_zshrc
 
 echo "Setup completed successfully."
