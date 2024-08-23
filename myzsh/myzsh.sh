@@ -2,6 +2,10 @@
 
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "$0")" && pwd)"
+echo "GITPATH is set to: $GITPATH"
+
+# GitHub URL base for the necessary configuration files
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main/myzsh"
 
 # Function to install dependencies
 installDepend() {
@@ -56,8 +60,12 @@ linkConfig() {
             }
             echo "Linked config.jsonc to $FASTFETCH_CONFIG."
         else
-            echo "config.jsonc not found in $GITPATH."
-            exit 1
+            echo "config.jsonc not found in $GITPATH. Attempting to download from GitHub..."
+            curl -fsSL "$GITHUB_BASE_URL/config.jsonc" -o "$FASTFETCH_CONFIG" || {
+                echo "Failed to download config.jsonc from GitHub."
+                exit 1
+            }
+            echo "Downloaded config.jsonc from GitHub to $FASTFETCH_CONFIG."
         fi
     else
         echo "config.jsonc already exists in $FASTFETCH_CONFIG_DIR."
@@ -73,8 +81,12 @@ linkConfig() {
             }
             echo "Linked starship.toml to $STARSHIP_CONFIG."
         else
-            echo "starship.toml not found in $GITPATH."
-            exit 1
+            echo "starship.toml not found in $GITPATH. Attempting to download from GitHub..."
+            curl -fsSL "$GITHUB_BASE_URL/starship.toml" -o "$STARSHIP_CONFIG" || {
+                echo "Failed to download starship.toml from GitHub."
+                exit 1
+            }
+            echo "Downloaded starship.toml from GitHub to $STARSHIP_CONFIG."
         fi
     else
         echo "starship.toml already exists in $CONFIG_DIR."
