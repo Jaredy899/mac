@@ -14,8 +14,15 @@ run_myzsh() {
 if ! command -v brew &> /dev/null; then
     echo "Homebrew is required but not installed. Installing Homebrew..."
     install_homebrew
+
+    # Add Homebrew to PATH and source it immediately
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 else
     echo "Homebrew is already installed."
+
+    # Ensure Homebrew is in PATH for the current session
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # Prompt to run myzsh.sh

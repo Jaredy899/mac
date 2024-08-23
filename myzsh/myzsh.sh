@@ -20,9 +20,10 @@ installDepend() {
         fi
     done
 
-    # Automatically install Alacritty, Kitty, and Tabby
-    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby")
-    echo "Installing terminal applications: ${CASK_DEPENDENCIES[*]}..."
+    # List of cask dependencies, including the Nerd Font
+    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-caskaydia-cove-nerd-font")
+
+    echo "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}..."
     for cask in "${CASK_DEPENDENCIES[@]}"; do
         echo "Installing $cask..."
         if ! brew install --cask "$cask"; then
@@ -37,6 +38,8 @@ installDepend() {
     fi
 }
 
+<<<<<<< HEAD
+=======
 # Function to download a file from GitHub if it doesn't exist locally
 download_or_use_local() {
     local file_name=$1
@@ -56,6 +59,7 @@ download_or_use_local() {
     fi
 }
 
+>>>>>>> 0b1382e4e5087b2bed09502aa1a5eafa5125366c
 # Function to link or copy fastfetch and starship configurations
 linkConfig() {
     USER_HOME="$HOME"
@@ -119,7 +123,6 @@ update_zshrc() {
 
 # Run all functions
 installDepend
-installFont
 linkConfig
 update_zshrc
 
