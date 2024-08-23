@@ -17,7 +17,7 @@ installDepend() {
         fi
     done
 
-    # Automatically install Alacritty, Kitty and Tabby
+    # Automatically install Alacritty, Kitty, and Tabby
     CASK_DEPENDENCIES=("alacritty" "kitty" "tabby")
     echo "Installing terminal applications: ${CASK_DEPENDENCIES[*]}..."
     for cask in "${CASK_DEPENDENCIES[@]}"; do
@@ -34,24 +34,18 @@ installDepend() {
     fi
 }
 
-# Function to install MesloLGS Nerd Font
+# Function to install Caskaydia Cove Nerd Font using Homebrew
 installFont() {
-    FONT_NAME="MesloLGS Nerd Font Mono"
-    FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
-    FONT_DIR="$HOME/Library/Fonts"
+    FONT_NAME="font-caskaydia-cove-nerd-font"
 
-    if fc-list :family | grep -iq "$FONT_NAME"; then
+    if brew list --cask | grep -iq "$FONT_NAME"; then
         echo "Font '$FONT_NAME' is already installed."
     else
-        echo "Installing font '$FONT_NAME'..."
-        if wget -q --spider "$FONT_URL"; then
-            TEMP_DIR=$(mktemp -d)
-            wget -q --show-progress "$FONT_URL" -O "$TEMP_DIR/${FONT_NAME}.zip"
-            unzip "$TEMP_DIR/${FONT_NAME}.zip" -d "$FONT_DIR"
-            rm -rf "$TEMP_DIR"
+        echo "Installing font '$FONT_NAME' using Homebrew..."
+        if brew tap homebrew/cask-fonts && brew install --cask "$FONT_NAME"; then
             echo "'$FONT_NAME' installed successfully."
         else
-            echo "Font '$FONT_NAME' not installed. Font URL is not accessible."
+            echo "Failed to install '$FONT_NAME'. Please check your brew installation."
             exit 1
         fi
     fi
