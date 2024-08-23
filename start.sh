@@ -15,6 +15,11 @@ remove_dock_items() {
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/icon_remove.sh)"
 }
 
+# Function to add Dock items by running the icon_add.sh script from your GitHub
+add_dock_items() {
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/icon_add.sh)"
+}
+
 # Check if Homebrew is installed and install it if not
 if ! command -v brew &> /dev/null; then
     echo "Homebrew is required but not installed. Installing Homebrew..."
@@ -46,6 +51,15 @@ if [[ "$remove_dock_script" == "y" || "$remove_dock_script" == "Y" ]]; then
     remove_dock_items
 else
     echo "Skipping Dock item removal."
+fi
+
+# Prompt to add Dock items
+read -p "Do you want to add Dock items using icon_add.sh from your GitHub? (y/n): " add_dock_script
+if [[ "$add_dock_script" == "y" || "$add_dock_script" == "Y" ]]; then
+    echo "Adding Dock items..."
+    add_dock_items
+else
+    echo "Skipping Dock item addition."
 fi
 
 echo "Script completed."
