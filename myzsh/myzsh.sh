@@ -10,7 +10,7 @@ GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main/myzsh"
 # Function to install dependencies
 installDepend() {
     # List of dependencies
-    DEPENDENCIES=(zsh zsh-completions bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
+    DEPENDENCIES=(zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
     echo "Installing dependencies..."
     for package in "${DEPENDENCIES[@]}"; do
