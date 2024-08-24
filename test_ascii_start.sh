@@ -23,9 +23,9 @@ add_dock_items() {
 # Function to display a prompt with an ASCII box
 ask_user() {
     question="$1"
-    echo "┌─────────────────────────────────────────────┐"
+    echo -e "\n┌─────────────────────────────────────────────┐"
     printf "│ %-41s │\n" "$question"
-    echo "└─────────────────────────────────────────────┘"
+    echo -e "└─────────────────────────────────────────────┘"
     read -p "(y/n): " response
     echo "$response"
 }
