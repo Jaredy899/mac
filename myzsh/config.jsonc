@@ -38,6 +38,14 @@
             "key": "  "
         },
         {
+            "type": "disk",
+            "key": "  "
+        },
+        {
+            "type": "battery",
+            "key": "  "
+        },
+        {
             "type": "custom",
             "format": "├─────────── \u001b[1mSoftware Information\u001b[0m ───────────┤"
         },
@@ -50,13 +58,40 @@
             "key": "  ",
             "format": "{1} {2}"
         },
-        {
-            "type": "wm",
-            "key": "  "
-        },
+        // {
+        //     "type": "wm",
+        //     "key": "  "
+        // },
         {
             "type": "shell",
             "key": "  "
+        },
+        {
+            "type": "processes",
+            "key": "  󰧑"
+        },
+        {
+            "type": "packages",
+            "key": "  "
+        },
+        {
+            "type": "custom",
+            "format": "|──────────────\u001b[1mMiscellaneous\u001b[0m──────────────────|"
+        },
+        {
+            "type": "datetime",
+            "key": "  "
+        },
+        {
+            "type": "localip",
+            "showIpv6": false,
+            "showMac": false,
+            "key": "  󰩠"
+        },
+        {
+            "type": "weather",
+            "timeout": 1000,
+            "key": "  "
         },
         {
             "type": "custom",
