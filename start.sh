@@ -35,15 +35,6 @@ else
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# Prompt to run myzsh.sh
-read -p "Do you want to run myzsh.sh from your GitHub? (y/n): " run_myzsh_script
-if [[ "$run_myzsh_script" == "y" || "$run_myzsh_script" == "Y" ]]; then
-    echo "Running myzsh.sh..."
-    run_myzsh
-else
-    echo "Skipping myzsh.sh."
-fi
-
 # Prompt to remove Dock items
 read -p "Do you want to remove Dock items? (y/n): " remove_dock_script
 if [[ "$remove_dock_script" == "y" || "$remove_dock_script" == "Y" ]]; then
@@ -60,6 +51,15 @@ if [[ "$add_dock_script" == "y" || "$add_dock_script" == "Y" ]]; then
     add_dock_items
 else
     echo "Skipping Dock item addition."
+fi
+
+# Prompt to run myzsh.sh
+read -p "Do you want to run myzsh.sh from your GitHub? (y/n): " run_myzsh_script
+if [[ "$run_myzsh_script" == "y" || "$run_myzsh_script" == "Y" ]]; then
+    echo "Running myzsh.sh..."
+    run_myzsh
+else
+    echo "Skipping myzsh.sh."
 fi
 
 echo "Script completed."
