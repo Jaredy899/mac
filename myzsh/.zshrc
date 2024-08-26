@@ -21,6 +21,8 @@ alias web='cd /var/www/html'
 # To temporarily bypass an alias, we precede the command with a \
 # EG: the ls command is aliased, but to use the normal ls command you would type \ls
 
+alias jc='bash -c "$(curl -fsSL jaredcervantes.com/mac)"'
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
