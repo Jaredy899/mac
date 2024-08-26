@@ -72,7 +72,8 @@
         },
         {
             "type": "packages",
-            "key": "  "
+            "key": "  ",
+            "format": "{1} (Processes)"
         },
         {
             "type": "custom",
