@@ -56,6 +56,11 @@ home_symbol = "󰋜 " # This sets the symbol for the home directory
 "Desktop" = " 󰇄 "
 "Movies" = "  "
 "Google Drive" = "  "
+"Contacts" = " 󰛋 "
+"Favorites" = " 󰚝 "
+"Videos" = "  "
+".config" = "  "
+".ssh" = " 󰣀 "
 
 # C module configuration
 [c]
