@@ -28,15 +28,21 @@ IFS=$'\n' read -rd '' -a current_dock_apps < <(dockutil --list | awk -F"\t" '{pr
 # Array to store apps to be removed from the Dock
 apps_to_remove=()
 
-# Ask user if they want to remove current Dock apps
+# Display a numbered list of current Dock applications and let user pick which ones to remove from the Dock
 if [ ${#current_dock_apps[@]} -gt 0 ]; then
     echo "Found the following applications in the Dock:"
-    for app in "${current_dock_apps[@]}"; do
-        read -p "Do you want to remove \"$app\" from the Dock? (y/n): " remove_app
-        if [[ "$remove_app" == "y" || "$remove_app" == "Y" ]]; then
-            apps_to_remove+=("$app")
+    for i in "${!current_dock_apps[@]}"; do
+        echo "$((i+1)). ${current_dock_apps[i]}"
+    done
+
+    echo "Enter the numbers of the applications you want to remove from the Dock, separated by spaces (e.g., 1 3 5):"
+    read -r selected_numbers
+
+    for num in $selected_numbers; do
+        if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le ${#current_dock_apps[@]} ]; then
+            apps_to_remove+=("${current_dock_apps[$((num-1))]}")
         else
-            echo "Keeping \"$app\" in the Dock."
+            echo "Invalid selection: $num. Skipping..."
         fi
     done
 else

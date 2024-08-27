@@ -49,15 +49,21 @@ done
 # Array to store apps to be added to the Dock
 apps_to_add=()
 
-# Ask user if they want to add non-standard apps to the Dock
+# Display a numbered list of non-standard applications and let user pick which ones to add to the Dock
 if [ ${#non_standard_apps[@]} -gt 0 ]; then
     echo "Found the following non-standard applications:"
-    for app in "${non_standard_apps[@]}"; do
-        read -p "Do you want to add $app to the Dock? (y/n): " add_app
-        if [[ "$add_app" == "y" || "$add_app" == "Y" ]]; then
-            apps_to_add+=("$app")
+    for i in "${!non_standard_apps[@]}"; do
+        echo "$((i+1)). ${non_standard_apps[i]}"
+    done
+
+    echo "Enter the numbers of the applications you want to add to the Dock, separated by spaces (e.g., 1 3 5):"
+    read -r selected_numbers
+
+    for num in $selected_numbers; do
+        if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le ${#non_standard_apps[@]} ]; then
+            apps_to_add+=("${non_standard_apps[$((num-1))]}")
         else
-            echo "Not adding $app to the Dock."
+            echo "Invalid selection: $num. Skipping..."
         fi
     done
 else
