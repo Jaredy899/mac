@@ -86,3 +86,9 @@ if [[ "$run_myzsh_script" == "y" || "$run_myzsh_script" == "Y" ]]; then
 else
     echo "Skipping terminal enhancement."
 fi
+
+echo "#############################"
+echo "##                         ##"
+echo "## Setup script completed. ##"
+echo "##                         ##"
+echo "#############################"
