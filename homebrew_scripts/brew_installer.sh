@@ -4,11 +4,12 @@
 function show_menu {
     echo "Select category:"
     echo "1. Browsers"
-    echo "2. Utilities"
+    echo "2. Communications"
     echo "3. Development"
-    echo "4. Multimedia"
-    echo "5. Other"
-    echo "6. Exit"
+    echo "4. Document"
+    echo "5. Multimedia"
+    echo "6. Utilities"
+    echo "7. Exit"
     read -p "Enter your choice [1-6]: " choice
 }
 
@@ -54,16 +55,16 @@ while true; do
     case $choice in
         1)
             echo "Browsers:"
-            app_display=("Google Chrome" "Firefox" "Brave Browser" "Safari Technology Preview" "Microsoft Edge" "eloston-chromium" "alex313031-thorium")
-            app_casks=("google-chrome" "firefox" "brave-browser" "safari-technology-preview" "microsoft-edge" "eloston-chromium" "alex313031-thorium")
+            app_display=("Arc" "Brave" "Google Chrome" "Chromium" "Edge" "Firefox" "Floorp" "LibreWolf" "Mullvad Browser" "Thorium Browser" "Tor Browser" "Ungoogled" "Vivaldi" "Waterfox")
+            app_casks=("arc" "brave-browsers" "google-chrome" "microsoft-edge" "firefox" "floorp" "Librewolf" "mullvad-browser" "alex313031-thorium" "tor-browser" "eloston-chromium" "vivaldi" "waterfox")
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the browsers you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
         2)
-            echo "Utilities:"
-            app_display=("Alfred" "Rectangle" "Itsycal" "CleanMyMac X" "BalenaEtcher" "GrandPerspective" "HandBrake" "The Unarchiver" "VLC" "Cloudflare WARP" "Raycast" "Commander One" "RustDesk" "Tailscale" "Termius" "Orbstack" "Ollama" "Raspberry Pi Imager" "PowerShell" "Cursor" "Crystalfetch" "Google Drive")
-            app_casks=("alfred" "rectangle" "itsycal" "cleanmymac" "balenaetcher" "grandperspective" "handbrake" "the-unarchiver" "vlc" "cloudflare-warp" "raycast" "commander-one" "rustdesk" "tailscale" "termius" "orbstack" "ollama" "raspberry-pi-imager" "powershell" "cursor" "crystalfetch" "google-drive")
+            echo "Communications:"
+            app_display=("Chatterino" "Discord" "Ferdium" "Jami" "Element" "Signal" "Skype" "Microsoft Teams" "Telegram" "Thunderbird" "Viber" "Zoom" "Zulip")
+            app_casks=("chatterino" "discord" "ferdium" "jami" "element" "signal" "skype" "microsoft-teams" "telegram" "thunderbird" "viber" "zoom" "zulip" "itsycal" "cleanmymac")
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the utilities you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
@@ -77,7 +78,7 @@ while true; do
             install_casks "${selected[@]}"
             ;;
         4)
-            echo "Multimedia:"
+            echo "Documents:"
             app_display=("VLC" "Spotify" "GIMP" "Audacity" "Zoom" "HandBrake")
             app_casks=("vlc" "spotify" "gimp" "audacity" "zoom" "handbrake")
             print_columns "${app_display[@]}"
@@ -85,7 +86,7 @@ while true; do
             install_casks "${selected[@]}"
             ;;
         5)
-            echo "Other:"
+            echo "Multimedia:"
             app_display=("Visual Studio Code" "VSCodium" "Zoom" "Raspberry Pi Imager" "Tabby" "Tailscale" "PowerShell" "Termius" "Parsec" "Orbstack" "Ollama")
             app_casks=("visual-studio-code" "vscodium" "zoom" "raspberry-pi-imager" "tabby" "tailscale" "powershell" "termius" "parsec" "orbstack" "ollama")
             print_columns "${app_display[@]}"
@@ -93,6 +94,14 @@ while true; do
             install_casks "${selected[@]}"
             ;;
         6)
+            echo "Utilities:"
+            app_display=("Rectangle" "Raspberry Pi Imager" "Tabby" "Tailscale" "PowerShell" "Termius" "Parsec" "Orbstack" "Ollama")
+            app_casks=("rectangle" "raspberry-pi-imager" "tabby" "tailscale" "powershell" "termius" "parsec" "orbstack" "ollama")
+            print_columns "${app_display[@]}"
+            read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
+            install_casks "${selected[@]}"
+            ;;
+        7)
             echo "Exiting..."
             break
             ;;
