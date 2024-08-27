@@ -14,9 +14,9 @@ install_homebrew() {
 
 # Function to run the brew_manager.sh script from local or GitHub
 run_brew_manager() {
-    if [[ -f "$GITPATH/homebrew-scripts/brew_manager.sh" ]]; then
+    if [[ -f "$GITPATH/homebrew_scripts/brew_manager.sh" ]]; then
         echo "Running brew_manager.sh from local directory..."
-        bash "$GITPATH/homebrew-scripts/brew_manager.sh"
+        bash "$GITPATH/homebrew_scripts/brew_manager.sh"
     else
         echo "Running brew_manager.sh from GitHub..."
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/homebrew-scripts/brew_manager.sh)"
