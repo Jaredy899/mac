@@ -71,29 +71,37 @@ while true; do
             ;;
         3)
             echo "Development:"
-            app_display=("Visual Studio Code" "Sublime Text" "iTerm2" "Postman" "VSCodium" "Tabby" "UTM" "Parsec" "ChatGPT" "Steam")
-            app_casks=("visual-studio-code" "sublime-text" "iterm2" "postman" "vscodium" "tabby" "utm" "parsec" "chatgpt" "steam")
+            app_display=("Anaconda" "CMake" "Docker Desktop" "Fork" "Git Butler" "GitHub Desktop" "Gitify" "GitKraken" "Godot Engine" "Miniconda" "Postman" "Pulsar" "Sublime Merge" "Sublime Text" "Thonny Python IDE" "Vagrant" "VS Code" "VS Codium" "Wezterm" )
+            app_casks=("anaconda" "cmake" "docker" "fork" "gitbutler" "github" "gitify" "gitkraken" "godot" "miniconda" "postman" "sublime-merge" "sublime-text" "thonny" "vagrant" "visual-studio-code" "vscodium" "wezterm" )
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the development tools you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
         4)
             echo "Documents:"
-            app_display=("VLC" "Spotify" "GIMP" "Audacity" "Zoom" "HandBrake")
-            app_casks=("vlc" "spotify" "gimp" "audacity" "zoom" "handbrake")
+            app_display=("Adobe Acrobat Reader" "AFFiNE" "Anki" "Calibre" "Foxit PDF Editor" " Foxit Reader" "Joplin" "LibreOffice" "Logseq" "massCode" "NAPS2" "Obsidian" "ONLYOFFICE" "Apache OpenOffice" "PDFsam Basic" "Simplenote" "Znote" "Zotero")
+            app_casks=("adobe-acrobat-reader" "affine" "anki" "calibre" "foxit-pdf-editor" "foxitreader" "joplin" "libreoffice" "logseq" "masscode" "naps2" "obsidian" "onlyoffice" "openoffice" "pdfsam-basic" "simplenote" "znote" "zotero")
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the multimedia apps you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
         5)
-            echo "Multimedia:"
-            app_display=("Visual Studio Code" "VSCodium" "Zoom" "Raspberry Pi Imager" "Tabby" "Tailscale" "PowerShell" "Termius" "Parsec" "Orbstack" "Ollama")
-            app_casks=("visual-studio-code" "vscodium" "zoom" "raspberry-pi-imager" "tabby" "tailscale" "powershell" "termius" "parsec" "orbstack" "ollama")
+            echo "Games:"
+            app_display=("ATLauncher" "Clone Hero" "EA App" "Epic Games Launcher" "Heroic Games Launcher" "Moonlight" "PS Remote Play" "SideQuest" "Steam" "XEMU")
+            app_casks=("atlauncher" "clone-hero" "ea" "epic-games" "heroic" "moonlight" "sony-ps-remote-play" "sidequest" "steam" "xemu")
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
         6)
+            echo "Multimedia:"
+            app_display=("Audacity" "Blender" "darktable" "foobar2000" "FreeCAD" "GIMP" "HandBrake" "Inkscape" "Jellyfin Media Player" "Jellyfin Server" "Kdenlive" "KiCad" "Krita" "Mp3tag" "OBS" "Plex Media Server" "Plex Desktop" "Shotcut" "Spotify" "Tidal" "VLC" "Yt-dip")
+            app_casks=("audacity" "blender" "darktable" "foobar2000" "freecad" "gimp" "handbrake" "inkscape" "jellyfin-media-player" "jellyfin" "kdenlive" "kicad" "krita" "mp3tag" "obs" "plex-media-server" "plex" "shotcut" "spotify" "tidal" "vlc" "yt-dip")
+            print_columns "${app_display[@]}"
+            read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
+            install_casks "${selected[@]}"
+            ;;
+        7)
             echo "Utilities:"
             app_display=("Rectangle" "Raspberry Pi Imager" "Tabby" "Tailscale" "PowerShell" "Termius" "Parsec" "Orbstack" "Ollama")
             app_casks=("rectangle" "raspberry-pi-imager" "tabby" "tailscale" "powershell" "termius" "parsec" "orbstack" "ollama")
@@ -101,7 +109,7 @@ while true; do
             read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
-        7)
+        8)
             echo "Exiting..."
             break
             ;;
