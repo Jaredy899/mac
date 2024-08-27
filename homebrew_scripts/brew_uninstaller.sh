@@ -3,7 +3,7 @@
 # Function to uninstall selected casks
 function uninstall_casks {
     local selected_casks=("$@")
-    for cask in "${selected_casks[@]}"; do
+    for cask in "${selected_casks[@]}"; do                      
         echo "Uninstalling $cask..."
         brew uninstall --cask "$cask"
     done
@@ -61,4 +61,8 @@ function list_and_uninstall {
 # Main script
 list_and_uninstall
 
-echo "Script completed."
+echo "############################"
+echo "##                        ##"
+echo "## Uninstaller completed. ##"
+echo "##                        ##"
+echo "############################"

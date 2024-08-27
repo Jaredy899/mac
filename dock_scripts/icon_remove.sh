@@ -62,4 +62,8 @@ fi
 echo "Resetting the Dock..."
 killall Dock
 
-echo "Dock configuration completed."
+echo "###################################"
+echo "##                               ##" 
+echo "## Dock configuration completed. ##"
+echo "##                               ##" 
+echo "###################################"

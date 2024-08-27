@@ -47,4 +47,8 @@ else
     echo "Skipping Dock item addition."
 fi
 
-echo "Dock management completed."
+echo "################################"
+echo "##                            ##"
+echo "## Dock management completed. ##"
+echo "##                            ##"
+echo "################################"

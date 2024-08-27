@@ -102,4 +102,8 @@ while true; do
     esac
 done
 
-echo "Script completed."
+echo "##########################" 
+echo "##                      ##"  
+echo "## Installer completed. ##"
+echo "##                      ##"  
+echo "##########################" 

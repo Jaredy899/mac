@@ -123,5 +123,10 @@ installDepend
 linkConfig
 replace_zshrc
 
-echo "Use the terminal of your choice and change the font to Caskaydia NF or Fira-Code NF"
-echo "Setup completed successfully."
+echo "##########################################################################################"
+echo "##                                                                                      ##"               
+echo "## Use the terminal of your choice and change the font to Caskaydia NF or Fira-Code NF. ##"
+echo "##                                                                                      ##"       
+echo "##                          Setup completed successfully.                               ##"
+echo "##                                                                                      ##"               
+echo "##########################################################################################"

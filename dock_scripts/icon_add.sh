@@ -94,4 +94,8 @@ else
     echo "No changes made to the Dock. Reset not needed."
 fi
 
-echo "Dock configuration completed."
+echo "###################################"
+echo "##                               ##" 
+echo "## Dock configuration completed. ##"
+echo "##                               ##" 
+echo "###################################"

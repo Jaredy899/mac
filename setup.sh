@@ -60,19 +60,35 @@ else
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# Run brew_manager.sh to manage Homebrew apps and casks
-run_brew_manager
+# Prompt to run brew_manager.sh to manage Homebrew apps and casks
+read -p "Do you want to run Homebrew Manager to manage Homebrew apps and casks? (y/n): " run_brew_manager_script
+if [[ "$run_brew_manager_script" == "y" || "$run_brew_manager_script" == "Y" ]]; then
+    echo "Running Homebrew Manager..."
+    run_brew_manager
+else
+    echo "Skipping Homebrew Manager."
+fi
 
-# Run dock_manager.sh to manage Dock items
-run_dock_manager
+# Prompt to run dock_manager.sh to manage Dock items
+read -p "Do you want to run Dock Manager to manage Dock items? (y/n): " run_dock_manager_script
+if [[ "$run_dock_manager_script" == "y" || "$run_dock_manager_script" == "Y" ]]; then
+    echo "Running Dock Manager..."
+    run_dock_manager
+else
+    echo "Skipping Dock Manager."
+fi
 
 # Prompt to run myzsh.sh to enhance the terminal appearance
-read -p "Do you want to run myzsh.sh to enhance your terminal appearance? (y/n): " run_myzsh_script
+read -p "Do you want to run myzsh to enhance your terminal appearance? (y/n): " run_myzsh_script
 if [[ "$run_myzsh_script" == "y" || "$run_myzsh_script" == "Y" ]]; then
-    echo "Enhancing terminal appearance with myzsh.sh..."
+    echo "Enhancing terminal appearance with myzsh..."
     run_myzsh
 else
     echo "Skipping terminal enhancement."
 fi
 
-echo "Setup script completed."
+echo "#############################"
+echo "##                         ##"
+echo "## Setup script completed. ##"
+echo "##                         ##"
+echo "#############################"
