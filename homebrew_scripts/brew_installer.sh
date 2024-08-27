@@ -6,11 +6,12 @@ function show_menu {
     echo "1. Browsers"
     echo "2. Communications"
     echo "3. Development"
-    echo "4. Document"
-    echo "5. Multimedia"
-    echo "6. Utilities"
-    echo "7. Exit"
-    read -p "Enter your choice [1-6]: " choice
+    echo "4. Documents"
+    echo "5. Games"
+    echo "6. Multimedia"
+    echo "7. Utilities"
+    echo "8. Exit"
+    read -p "Enter your choice [1-8]: " choice
 }
 
 # Function to print apps in columns
