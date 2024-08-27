@@ -87,11 +87,12 @@ linkConfig() {
     fi
 }
 
-# Function to replace .zshrc with the one from the myzsh folder or download it from GitHub
+# Function to replace .zshrc while keeping aliases separate
 replace_zshrc() {
     USER_HOME="$HOME"
     ZSHRC_FILE="$USER_HOME/.zshrc"
     ZSHRC_SOURCE="$GITPATH/.zshrc"
+    ALIASES_FILE="$USER_HOME/.zshrc_aliases"
 
     # Backup existing .zshrc if it exists
     if [ -f "$ZSHRC_FILE" ]; then
@@ -104,18 +105,33 @@ replace_zshrc() {
     if [ -f "$ZSHRC_SOURCE" ]; then
         echo "Replacing .zshrc with the new version from $GITPATH..."
         cp "$ZSHRC_SOURCE" "$ZSHRC_FILE"
-        echo ".zshrc replaced successfully."
     else
         echo ".zshrc not found in $GITPATH. Downloading from GitHub..."
-        if curl -fsSL "$GITHUB_BASE
-
-_URL/.zshrc" -o "$ZSHRC_FILE"; then
+        if curl -fsSL "$GITHUB_BASE_URL/.zshrc" -o "$ZSHRC_FILE"; then
             echo "Downloaded .zshrc from GitHub to $ZSHRC_FILE."
         else
             echo "Failed to download .zshrc from GitHub."
             exit 1
         fi
     fi
+
+    # Ensure .zshrc sources the aliases file
+    if ! grep -q "source $ALIASES_FILE" "$ZSHRC_FILE"; then
+        echo "source $ALIASES_FILE" >> "$ZSHRC_FILE"
+        echo "Added sourcing of $ALIASES_FILE to .zshrc."
+    fi
+
+    echo ".zshrc replaced and updated successfully."
+
+    # Inform the user about the separate .zshrc_aliases file
+    echo "############################################################################################"
+    echo "##                                                                                        ##"
+    echo "## A separate .zshrc_aliases file is being used to keep your aliases and custom settings. ##"
+    echo "## Place your aliases and other persistent configurations in ~/.zshrc_aliases.            ##"
+    echo "## This file will not be overwritten by this script, ensuring your custom settings are    ##"
+    echo "## kept intact.                                                                           ##"
+    echo "##                                                                                        ##"
+    echo "############################################################################################"
 }
 
 # Run all functions
@@ -124,9 +140,9 @@ linkConfig
 replace_zshrc
 
 echo "##########################################################################################"
-echo "##                                                                                      ##"               
+echo "##                                                                                      ##"
 echo "## Use the terminal of your choice and change the font to Caskaydia NF or Fira-Code NF. ##"
-echo "##                                                                                      ##"       
+echo "##                                                                                      ##"
 echo "##                          Setup completed successfully.                               ##"
-echo "##                                                                                      ##"               
+echo "##                                                                                      ##"
 echo "##########################################################################################"
