@@ -22,6 +22,7 @@ alias web='cd /var/www/html'
 # EG: the ls command is aliased, but to use the normal ls command you would type \ls
 
 alias jc='bash -c "$(curl -fsSL jaredcervantes.com/mac)"'
+alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
