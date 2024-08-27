@@ -71,8 +71,8 @@ while true; do
             ;;
         3)
             echo "Development:"
-            app_display=("Anaconda" "CMake" "Docker Desktop" "Fork" "Git Butler" "GitHub Desktop" "Gitify" "GitKraken" "Godot Engine" "Miniconda" "Postman" "Pulsar" "Sublime Merge" "Sublime Text" "Thonny Python IDE" "Vagrant" "VS Code" "VS Codium" "Wezterm" )
-            app_casks=("anaconda" "cmake" "docker" "fork" "gitbutler" "github" "gitify" "gitkraken" "godot" "miniconda" "postman" "sublime-merge" "sublime-text" "thonny" "vagrant" "visual-studio-code" "vscodium" "wezterm" )
+            app_display=("Anaconda" "CMake" "Docker Desktop" "Fork" "Git Butler" "GitHub Desktop" "Gitify" "GitKraken" "Godot Engine" "Miniconda" "OrbStack" "Postman" "Pulsar" "Sublime Merge" "Sublime Text" "Thonny Python IDE" "Vagrant" "VS Code" "VS Codium" "Wezterm" )
+            app_casks=("anaconda" "cmake" "docker" "fork" "gitbutler" "github" "gitify" "gitkraken" "godot" "miniconda" "orbstack" "postman" "sublime-merge" "sublime-text" "thonny" "vagrant" "visual-studio-code" "vscodium" "wezterm" )
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the development tools you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
@@ -95,16 +95,16 @@ while true; do
             ;;
         6)
             echo "Multimedia:"
-            app_display=("Audacity" "Blender" "darktable" "foobar2000" "FreeCAD" "GIMP" "HandBrake" "Inkscape" "Jellyfin Media Player" "Jellyfin Server" "Kdenlive" "KiCad" "Krita" "Mp3tag" "OBS" "Plex Media Server" "Plex Desktop" "Shotcut" "Spotify" "Tidal" "VLC" "Yt-dip")
-            app_casks=("audacity" "blender" "darktable" "foobar2000" "freecad" "gimp" "handbrake" "inkscape" "jellyfin-media-player" "jellyfin" "kdenlive" "kicad" "krita" "mp3tag" "obs" "plex-media-server" "plex" "shotcut" "spotify" "tidal" "vlc" "yt-dip")
+            app_display=("Audacity" "Blender" "darktable" "foobar2000" "FreeCAD" "GIMP" "HandBrake" "Inkscape" "Jellyfin Media Player" "Jellyfin Server" "Kdenlive" "KiCad" "Krita" "Mp3tag" "OBS" "Plex Media Server" "Plex Desktop" "Shotcut" "Spotify" "Tidal" "VLC" "XnViewMP" "Yt-dip")
+            app_casks=("audacity" "blender" "darktable" "foobar2000" "freecad" "gimp" "handbrake" "inkscape" "jellyfin-media-player" "jellyfin" "kdenlive" "kicad" "krita" "mp3tag" "obs" "plex-media-server" "plex" "shotcut" "spotify" "tidal" "vlc" "xnviewmp" "yt-dip")
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
         7)
             echo "Utilities:"
-            app_display=("Rectangle" "Raspberry Pi Imager" "Tabby" "Tailscale" "PowerShell" "Termius" "Parsec" "Orbstack" "Ollama")
-            app_casks=("rectangle" "raspberry-pi-imager" "tabby" "tailscale" "powershell" "termius" "parsec" "orbstack" "ollama")
+            app_display=("1Password" "Alacritty Terminal" "AnyDesk" "Barrier" "Bitwarden" "CopyQ" "Cpuinfo" "DevToys" "Dropbox" "Duplicati" "Espanso" "Etcher" "f.lux" "iTerm2" "KeePassXC" "Macs Fan Control" "Malwarebytes" "Motrix" "Mullvad VPN" "Nextcloud" "OpenRBG" "Ollama" "Orca Slicer" "ownCloud" "Parsec" "PowerShell" "Raspberry Pi Imager" "Rectangle" "Renamer" "PrusaSlicer" "qBittorent" "Spacedrive File Manager" "Syncthing" "Tabby.sh" "Tailscale" "TeamViewer" "Termius" "Transmission" "Wireshark" "Xtreme Download Manager" "ZeroTier One" )
+            app_casks=("1password" "alacritty" "anydesk" "barrier" "bitwarden" "copyq" "cpuinfo" "devtoys" "dropbox" "duplicati" "espanso" "balenaetcher" "flux" "iterm2" "keepassxc" "macs-fan-control" "malwarebytes" "motrix" "mullvadvpn" "nextcloud" "openrgb" "ollama" "orcaslicer" "owncloud" "parsec" "powershell" "raspberry-pi-imager" "rectangle" "renamer" "qbittorrent" "spacedrive" "syncthing" "tabby" "tailscale" "teamviewer" "termius" "transmission" "wireshark" "xdm" "zerotier-one" )
             print_columns "${app_display[@]}"
             read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
