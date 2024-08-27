@@ -19,7 +19,7 @@ run_brew_manager() {
         bash "$GITPATH/homebrew_scripts/brew_manager.sh"
     else
         echo "Running brew_manager.sh from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/homebrew-scripts/brew_manager.sh)"
+        bash -c "$(curl -fsSL $GITHUB_BASE_URL/homebrew_scripts/brew_manager.sh)"
     fi
 }
 
