@@ -1,110 +1,127 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "$0")" && pwd)"
 echo "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary configuration files
-GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/my-big-repo/main"
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main/myzsh"
 
-# Function to install Homebrew
-install_homebrew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-}
+# Function to install dependencies
+installDepend() {
+    # List of dependencies
+    DEPENDENCIES=(zsh zsh-autocomplete bat croc tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
-# Function to run the myzsh.sh script from local or GitHub
-run_myzsh() {
-    if [[ -f "$GITPATH/myzsh/myzsh.sh" ]]; then
-        echo "Running myzsh.sh from local directory..."
-        bash "$GITPATH/myzsh/myzsh.sh"
-    else
-        echo "Running myzsh.sh from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/myzsh/myzsh.sh)"
+    echo "Installing dependencies..."
+    for package in "${DEPENDENCIES[@]}"; do
+        echo "Installing $package..."
+        if ! brew install "$package"; then
+            echo "Failed to install $package. Please check your brew installation."
+            exit 1
+        fi
+    done
+
+    # List of cask dependencies, including the Nerd Font
+    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-caskaydia-cove-nerd-font" "font-fira-code-nerd-font")
+
+    echo "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}..."
+    for cask in "${CASK_DEPENDENCIES[@]}"; do
+        echo "Installing $cask..."
+        if ! brew install --cask "$cask"; then
+            echo "Failed to install $cask. Please check your brew installation."
+            exit 1
+        fi
+    done
+
+    # Complete fzf installation
+    if [ -e ~/.fzf/install ]; then
+        ~/.fzf/install --all
     fi
 }
 
-# Function to remove Dock items using local script or GitHub
-remove_dock_items() {
-    if [[ -f "$GITPATH/dock_scripts/icon_remove.sh" ]]; then
-        echo "Removing Dock items using local script..."
-        bash "$GITPATH/dock_scripts/icon_remove.sh"
+# Function to link or copy fastfetch and starship configurations, replacing them each time
+linkConfig() {
+    USER_HOME="$HOME"
+    CONFIG_DIR="$USER_HOME/.config"
+
+    # Fastfetch configuration
+    FASTFETCH_CONFIG_DIR="$CONFIG_DIR/fastfetch"
+    FASTFETCH_CONFIG="$FASTFETCH_CONFIG_DIR/config.jsonc"
+
+    # Create the configuration directory if it does not exist
+    mkdir -p "$FASTFETCH_CONFIG_DIR"
+
+    # Always replace or link the config.jsonc file
+    if [ -f "$GITPATH/config.jsonc" ]; then
+        ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
+            echo "Failed to create symbolic link for config.jsonc"
+            exit 1
+        }
+        echo "Linked config.jsonc to $FASTFETCH_CONFIG."
     else
-        echo "Removing Dock items using script from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/dock_scripts/icon_remove.sh)"
+        echo "config.jsonc not found in $GITPATH. Downloading from GitHub..."
+        curl -fsSL "$GITHUB_BASE_URL/config.jsonc" -o "$FASTFETCH_CONFIG" || {
+            echo "Failed to download config.jsonc from GitHub."
+            exit 1
+        }
+        echo "Downloaded config.jsonc from GitHub to $FASTFETCH_CONFIG."
+    fi
+
+    # Starship configuration
+    STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
+
+    # Always replace or link the starship.toml file
+    if [ -f "$GITPATH/starship.toml" ]; then
+        ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
+            echo "Failed to create symbolic link for starship.toml"
+            exit 1
+        }
+        echo "Linked starship.toml to $STARSHIP_CONFIG."
+    else
+        echo "starship.toml not found in $GITPATH. Downloading from GitHub..."
+        curl -fsSL "$GITHUB_BASE_URL/starship.toml" -o "$STARSHIP_CONFIG" || {
+            echo "Failed to download starship.toml from GitHub."
+            exit 1
+        }
+        echo "Downloaded starship.toml from GitHub to $STARSHIP_CONFIG."
     fi
 }
 
-# Function to add Dock items using local script or GitHub
-add_dock_items() {
-    if [[ -f "$GITPATH/dock_scripts/icon_add.sh" ]]; then
-        echo "Adding Dock items using local script..."
-        bash "$GITPATH/dock_scripts/icon_add.sh"
+# Function to replace .zshrc with the one from the myzsh folder or download it from GitHub
+replace_zshrc() {
+    USER_HOME="$HOME"
+    ZSHRC_FILE="$USER_HOME/.zshrc"
+    ZSHRC_SOURCE="$GITPATH/.zshrc"
+
+    # Backup existing .zshrc if it exists
+    if [ -f "$ZSHRC_FILE" ]; then
+        echo "Backing up existing .zshrc to .zshrc.backup..."
+        cp "$ZSHRC_FILE" "$ZSHRC_FILE.backup"
+        echo "Your previous .zshrc has been backed up as .zshrc.backup in your home directory."
+    fi
+
+    # Replace .zshrc with the one from myzsh folder or download from GitHub
+    if [ -f "$ZSHRC_SOURCE" ]; then
+        echo "Replacing .zshrc with the new version from $GITPATH..."
+        cp "$ZSHRC_SOURCE" "$ZSHRC_FILE"
+        echo ".zshrc replaced successfully."
     else
-        echo "Adding Dock items using script from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/dock_scripts/icon_add.sh)"
+        echo ".zshrc not found in $GITPATH. Downloading from GitHub..."
+        if curl -fsSL "$GITHUB_BASE
+
+_URL/.zshrc" -o "$ZSHRC_FILE"; then
+            echo "Downloaded .zshrc from GitHub to $ZSHRC_FILE."
+        else
+            echo "Failed to download .zshrc from GitHub."
+            exit 1
+        fi
     fi
 }
 
-# Function to run the brew_manager.sh script from local or GitHub
-run_brew_manager() {
-    if [[ -f "$GITPATH/homebrew-scripts/brew_manager.sh" ]]; then
-        echo "Running brew_manager.sh from local directory..."
-        bash "$GITPATH/homebrew-scripts/brew_manager.sh"
-    else
-        echo "Running brew_manager.sh from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/homebrew-scripts/brew_manager.sh)"
-    fi
-}
+# Run all functions
+installDepend
+linkConfig
+replace_zshrc
 
-# Check if Homebrew is installed and install it if not
-if ! command -v brew &> /dev/null; then
-    echo "Homebrew is required but not installed. Installing Homebrew..."
-    install_homebrew
-
-    # Add Homebrew to PATH and source it immediately
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-else
-    echo "Homebrew is already installed."
-
-    # Ensure Homebrew is in PATH for the current session
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-# Prompt to remove Dock items
-read -p "Do you want to remove Dock items? (y/n): " remove_dock_script
-if [[ "$remove_dock_script" == "y" || "$remove_dock_script" == "Y" ]]; then
-    echo "Removing Dock items..."
-    remove_dock_items
-else
-    echo "Skipping Dock item removal."
-fi
-
-# Prompt to add Dock items
-read -p "Do you want to add Dock items from your Application? (y/n): " add_dock_script
-if [[ "$add_dock_script" == "y" || "$add_dock_script" == "Y" ]]; then
-    echo "Adding Dock items..."
-    add_dock_items
-else
-    echo "Skipping Dock item addition."
-fi
-
-# Prompt to run myzsh.sh
-read -p "Do you want to run myzsh.sh from your GitHub? (y/n): " run_myzsh_script
-if [[ "$run_myzsh_script" == "y" || "$run_myzsh_script" == "Y" ]]; then
-    echo "Running myzsh.sh..."
-    run_myzsh
-else
-    echo "Skipping myzsh.sh."
-fi
-
-# Prompt to run brew_manager.sh
-read -p "Do you want to manage your Homebrew apps using brew_manager.sh? (y/n): " run_brew_manager_script
-if [[ "$run_brew_manager_script" == "y" || "$run_brew_manager_script" == "Y" ]]; then
-    echo "Running brew_manager.sh..."
-    run_brew_manager
-else
-    echo "Skipping brew_manager.sh."
-fi
-
-echo "Script completed."
+echo "Use the terminal of your choice and change the font to Caskaydia NF or Fira-Code NF"
+echo "Setup completed successfully."

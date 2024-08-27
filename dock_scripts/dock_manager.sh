@@ -1,28 +1,31 @@
 #!/bin/bash
 
-# Set the DOCK_SCRIPTS_PATH variable to the directory where the dock scripts are located
-DOCK_SCRIPTS_PATH="$(cd "$(dirname "$0")" && pwd)/dock_scripts"
-echo "DOCK_SCRIPTS_PATH is set to: $DOCK_SCRIPTS_PATH"
+# Set the GITPATH variable to the directory where the script is located
+GITPATH="$(cd "$(dirname "$0")" && pwd)"
+echo "GITPATH is set to: $GITPATH"
+
+# GitHub URL base for the necessary Dock scripts
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main/dock_scripts"
 
 # Function to remove Dock items using icon_remove.sh
 remove_dock_items() {
-    if [[ -f "$DOCK_SCRIPTS_PATH/icon_remove.sh" ]]; then
-        echo "Running icon_remove.sh to remove Dock items..."
-        bash "$DOCK_SCRIPTS_PATH/icon_remove.sh"
+    if [[ -f "$GITPATH/icon_remove.sh" ]]; then
+        echo "Running icon_remove.sh from local directory..."
+        bash "$GITPATH/icon_remove.sh"
     else
-        echo "Error: icon_remove.sh not found in $DOCK_SCRIPTS_PATH."
-        exit 1
+        echo "Running icon_remove.sh from GitHub..."
+        bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_remove.sh)"
     fi
 }
 
 # Function to add Dock items using icon_add.sh
 add_dock_items() {
-    if [[ -f "$DOCK_SCRIPTS_PATH/icon_add.sh" ]]; then
-        echo "Running icon_add.sh to add Dock items..."
-        bash "$DOCK_SCRIPTS_PATH/icon_add.sh"
+    if [[ -f "$GITPATH/icon_add.sh" ]]; then
+        echo "Running icon_add.sh from local directory..."
+        bash "$GITPATH/icon_add.sh"
     else
-        echo "Error: icon_add.sh not found in $DOCK_SCRIPTS_PATH."
-        exit 1
+        echo "Running icon_add.sh from GitHub..."
+        bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_add.sh)"
     fi
 }
 
