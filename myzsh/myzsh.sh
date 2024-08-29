@@ -116,22 +116,25 @@ replace_zshrc() {
     fi
 
     # Ensure .zshrc sources the aliases file
-    if ! grep -q "source $ALIASES_FILE" "$ZSHRC_FILE"; then
-        echo "source $ALIASES_FILE" >> "$ZSHRC_FILE"
-        echo "Added sourcing of $ALIASES_FILE to .zshrc."
-    fi
+    # if ! grep -q "source $ALIASES_FILE" "$ZSHRC_FILE"; then
+    #     echo "source $ALIASES_FILE" >> "$ZSHRC_FILE"
+    #     echo "Added sourcing of $ALIASES_FILE to .zshrc."
+    # fi
 
     echo ".zshrc replaced and updated successfully."
 
     # Inform the user about the separate .zshrc_aliases file
-    echo "############################################################################################"
-    echo "##                                                                                        ##"
-    echo "## A separate .zshrc_aliases file is being used to keep your aliases and custom settings. ##"
-    echo "## Place your aliases and other persistent configurations in ~/.zshrc_aliases.            ##"
-    echo "## This file will not be overwritten by this script, ensuring your custom settings are    ##"
-    echo "## kept intact.                                                                           ##"
-    echo "##                                                                                        ##"
-    echo "############################################################################################"
+    # echo "#######################################################"
+    # echo "##                                                   ##"
+    # echo "## A separate .zshrc_aliases file is being used      ##"
+    # echo "## to keep your aliases and custom settings.         ##"
+    # echo "## Place your aliases and other persistent           ##"
+    # echo "## configurations in ~/.zshrc_aliases.               ##"
+    # echo "## This file will not be overwritten by this script, ##"
+    # echo "## ensuring your custom settings are                 ##"
+    # echo "## kept intact.                                      ##"                                     
+    # echo "##                                                   ##"
+    # echo "#######################################################"
 }
 
 # Run all functions
