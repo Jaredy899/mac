@@ -68,12 +68,12 @@
         },
         {
             "type": "processes",
-            "key": "  󰧑"
+            "key": "  󰧑",
+            "format": "{1} (Processes)"
         },
         {
             "type": "packages",
-            "key": "  ",
-            "format": "{1} (Processes)"
+            "key": "  "
         },
         {
             "type": "custom",
