@@ -6,5 +6,5 @@ This script starts with installing ChrisTitusTech's mybash script and adapting i
 
 To get started, open your terminal and run the following command:
 ```bash
- bash <(curl -L jaredcervantes.com/mac)
+bash <(curl -L jaredcervantes.com/mac)
 ```
