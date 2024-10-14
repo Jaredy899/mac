@@ -66,7 +66,7 @@ while true; do
     echo "1) Run Homebrew Manager to manage Homebrew apps and casks"
     echo "2) Run Dock Manager to manage Dock items"
     echo "3) Run myzsh to enhance your terminal appearance"
-    echo "4) Exit"
+    echo "0) Exit"
     read -p "Enter your choice (1-4): " choice
 
     case $choice in
@@ -82,7 +82,7 @@ while true; do
             echo "Enhancing terminal appearance with myzsh..."
             run_myzsh
             ;;
-        4)
+        0)
             echo "Exiting setup script."
             break
             ;;
