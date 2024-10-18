@@ -10,7 +10,7 @@ GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main/myzsh"
 # Function to install dependencies
 installDepend() {
     # List of dependencies
-    DEPENDENCIES=(zsh zsh-autocomplete bat croc tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
+    DEPENDENCIES=(zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
     echo "Installing dependencies..."
     for package in "${DEPENDENCIES[@]}"; do
@@ -22,7 +22,7 @@ installDepend() {
     done
 
     # List of cask dependencies, including the Nerd Font
-    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-caskaydia-cove-nerd-font" "font-fira-code-nerd-font")
+    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-fira-code-nerd-font")
 
     echo "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}..."
     for cask in "${CASK_DEPENDENCIES[@]}"; do

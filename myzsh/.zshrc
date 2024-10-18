@@ -28,11 +28,11 @@ alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/ma
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-# Edit this .bashrc file
-alias ebrc='nano ~/.bashrc'
+# Edit this .zshrc file
+alias ezrc='nano ~/.zshrc'
 
-# Show help for this .bashrc file
-alias hlp='less ~/.bashrc_help'
+# Show help for this .zshrc file
+alias hlp='less ~/.zshrc_help'
 
 # alias to show the date
 alias da='date "+%Y-%m-%d %A %T %Z"'
