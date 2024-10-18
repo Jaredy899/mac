@@ -67,7 +67,7 @@ while true; do
     echo "2) Run Dock Manager to manage Dock items"
     echo "3) Run myzsh to enhance your terminal appearance"
     echo "0) Exit"
-    read -p "Enter your choice (1-4): " choice
+    read -p "Enter your choice (1-3): " choice
 
     case $choice in
         1)
