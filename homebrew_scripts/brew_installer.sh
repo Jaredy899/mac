@@ -10,8 +10,8 @@ function show_menu {
     echo "5. Games"
     echo "6. Multimedia"
     echo "7. Utilities"
-    echo "8. Exit"
-    read -p "Enter your choice [1-8]: " choice
+    echo "0. Exit"
+    read -p "Enter your choice [1-7]: " choice
 }
 
 # Function to print apps in columns
@@ -110,7 +110,7 @@ while true; do
             read -p "Enter the numbers of the apps you want to install (separated by space): " -a selected
             install_casks "${selected[@]}"
             ;;
-        8)
+        0)
             echo "Exiting..."
             break
             ;;
