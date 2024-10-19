@@ -48,32 +48,44 @@ echo "## Welcome to the Brew Manager!  ##"
 echo "##                               ##"
 echo "###################################" 
 
-# Prompt to run the updater script
-read -p "Do you want to run the Brew Updater? (y/n): " run_updater_script
-if [[ "$run_updater_script" == "y" || "$run_updater_script" == "Y" ]]; then
-    echo "Running Brew Updater..."
-    run_updater
-else
-    echo "Skipping Brew Updater."
-fi
+# Function to display menu and get user choice
+display_menu() {
+    echo "Please select an option:"
+    echo "1. Run Brew Updater"
+    echo "2. Run Brew Installer"
+    echo "3. Run Brew Uninstaller"
+    echo "0. Exit"
+    read -p "Enter your choice (0-3): " choice
+    echo
+    return $choice
+}
 
-# Prompt to run the installer script
-read -p "Do you want to run the Brew Installer? (y/n): " run_installer_script
-if [[ "$run_installer_script" == "y" || "$run_installer_script" == "Y" ]]; then
-    echo "Running Brew Installer..."
-    run_installer
-else
-    echo "Skipping Brew Installer."
-fi
-
-# Prompt to run the uninstaller script
-read -p "Do you want to run the Brew Uninstaller? (y/n): " run_uninstaller_script
-if [[ "$run_uninstaller_script" == "y" || "$run_uninstaller_script" == "Y" ]]; then
-    echo "Running Brew Uninstaller..."
-    run_uninstaller
-else
-    echo "Skipping Brew Uninstaller."
-fi
+# Main loop
+while true; do
+    display_menu
+    case $? in
+        1)
+            echo "Running Brew Updater..."
+            run_updater
+            ;;
+        2)
+            echo "Running Brew Installer..."
+            run_installer
+            ;;
+        3)
+            echo "Running Brew Uninstaller..."
+            run_uninstaller
+            ;;
+        0)
+            echo "Exiting Brew Manager."
+            break
+            ;;
+        *)
+            echo "Invalid choice. Please try again."
+            ;;
+    esac
+    echo
+done
 
 echo "#######################################"
 echo "##                                   ##" 
