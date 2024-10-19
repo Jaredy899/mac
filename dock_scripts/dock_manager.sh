@@ -29,23 +29,40 @@ add_dock_items() {
     fi
 }
 
-# Prompt to remove Dock items
-read -p "Do you want to remove Dock items? (y/n): " remove_dock_choice
-if [[ "$remove_dock_choice" == "y" || "$remove_dock_choice" == "Y" ]]; then
-    echo "Removing Dock items..."
-    remove_dock_items
-else
-    echo "Skipping Dock item removal."
-fi
+# Function to display menu and get user choice
+display_menu() {
+    echo "Dock Management Menu:"
+    echo "  1. Add Dock icons"
+    echo "  2. Remove Dock icons"
+    echo "  0. Exit"
+    read -p "Enter your choice (0-2): " choice
+    echo $choice
+}
 
-# Prompt to add Dock items
-read -p "Do you want to add Dock items? (y/n): " add_dock_choice
-if [[ "$add_dock_choice" == "y" || "$add_dock_choice" == "Y" ]]; then
-    echo "Adding Dock items..."
-    add_dock_items
-else
-    echo "Skipping Dock item addition."
-fi
+# Main loop
+while true; do
+    choice=$(display_menu)
+    
+    case $choice in
+        1)
+            echo "Adding Dock items..."
+            add_dock_items
+            ;;
+        2)
+            echo "Removing Dock items..."
+            remove_dock_items
+            ;;
+        0)
+            echo "Exiting Dock management."
+            break
+            ;;
+        *)
+            echo "Invalid option. Please try again."
+            ;;
+    esac
+    
+    echo # Empty line for better readability
+done
 
 echo "################################"
 echo "##                            ##"
