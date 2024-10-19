@@ -64,30 +64,47 @@ function update_brew_items {
     installed_formulae=$(brew list --formula)
     installed_casks=$(brew list --cask)
 
-    # Combine formulae and casks into a single list
-    all_installed=($installed_formulae $installed_casks)
-
     echo "Checking for updates to Homebrew apps and casks..."
 
     # Start the spinner in the background
-    (brew outdated > /tmp/brew_outdated_list.txt) &
+    (brew outdated --formula > /tmp/brew_outdated_formula.txt) &
+    (brew outdated --cask > /tmp/brew_outdated_casks.txt) &
     spinner_pid=$!
     show_spinner $spinner_pid
 
-    # Read outdated items from the file
-    outdated_items=$(cat /tmp/brew_outdated_list.txt)
+    # Read outdated items from the files
+    outdated_formulae=$(cat /tmp/brew_outdated_formula.txt)
+    outdated_casks=$(cat /tmp/brew_outdated_casks.txt)
 
-    if [ -z "$outdated_items" ]; then
+    if [ -z "$outdated_formulae" ] && [ -z "$outdated_casks" ]; then
         echo "No updates needed."
     else
-        echo "Outdated items found. Updating..."
-        for item in $outdated_items; do
-            update_brew_item "$item"
-        done
+        if [ -n "$outdated_formulae" ]; then
+            echo "Outdated formulae found. Updating..."
+            for item in $outdated_formulae; do
+                update_brew_item "$item"
+            done
+        fi
+
+        if [ -n "$outdated_casks" ]; then
+            echo "Outdated casks found. Updating..."
+            for cask in $outdated_casks; do
+                echo -n "Updating $cask"
+                show_progress &
+                progress_pid=$!
+                if brew install --cask "$cask" > /dev/null 2>&1; then
+                    kill $progress_pid > /dev/null 2>&1
+                    echo -e "\r$cask updated successfully!"
+                else
+                    kill $progress_pid > /dev/null 2>&1
+                    echo -e "\rFailed to update $cask. Please check manually."
+                fi
+            done
+        fi
     fi
 
-    # Clean up temporary file
-    rm /tmp/brew_outdated_list.txt
+    # Clean up temporary files
+    rm /tmp/brew_outdated_formula.txt /tmp/brew_outdated_casks.txt
 }
 
 # Main script execution
