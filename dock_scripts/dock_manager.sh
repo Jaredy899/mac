@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the GITPATH variable to the directory where the script is located
-GITPATH="$(cd "$(dirname "$0")" && pwd)"
+GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary Dock scripts
