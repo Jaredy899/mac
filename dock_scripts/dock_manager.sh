@@ -3,28 +3,34 @@
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "GITPATH is set to: $GITPATH"
+echo "Current working directory: $(pwd)"
+echo "Script location: ${BASH_SOURCE[0]}"
 
 # GitHub URL base for the necessary Dock scripts
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/dock_scripts/"
 
 # Function to remove Dock items using icon_remove.sh
 remove_dock_items() {
-    if [[ -f "$GITPATH/icon_remove.sh" ]]; then
+    local script_path="$GITPATH/icon_remove.sh"
+    echo "Checking for icon_remove.sh at: $script_path"
+    if [[ -f "$script_path" ]]; then
         echo "Running icon_remove.sh from local directory..."
-        bash "$GITPATH/icon_remove.sh"
+        bash "$script_path"
     else
-        echo "Running icon_remove.sh from GitHub..."
+        echo "Local icon_remove.sh not found. Running from GitHub..."
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_remove.sh)"
     fi
 }
 
 # Function to add Dock items using icon_add.sh
 add_dock_items() {
-    if [[ -f "$GITPATH/icon_add.sh" ]]; then
+    local script_path="$GITPATH/icon_add.sh"
+    echo "Checking for icon_add.sh at: $script_path"
+    if [[ -f "$script_path" ]]; then
         echo "Running icon_add.sh from local directory..."
-        bash "$GITPATH/icon_add.sh"
+        bash "$script_path"
     else
-        echo "Running icon_add.sh from GitHub..."
+        echo "Local icon_add.sh not found. Running from GitHub..."
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_add.sh)"
     fi
 }
