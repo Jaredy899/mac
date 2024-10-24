@@ -5,7 +5,7 @@ GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary Dock scripts
-GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main/dock_scripts"
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/dock_scripts/"
 
 # Function to remove Dock items using icon_remove.sh
 remove_dock_items() {
