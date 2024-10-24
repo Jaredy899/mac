@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# Set the GITPATH variable to the directory where the script is located
-GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Check if a path argument is provided
+if [ -n "$1" ]; then
+    GITPATH="$1"
+else
+    GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
 echo "GITPATH is set to: $GITPATH"
 echo "Current working directory: $(pwd)"
 echo "Script location: ${BASH_SOURCE[0]}"

@@ -25,12 +25,13 @@ run_brew_manager() {
 
 # Function to run the dock_manager.sh script from local or GitHub
 run_dock_manager() {
-    if [[ -f "$GITPATH/dock_scripts/dock_manager.sh" ]]; then
+    local dock_scripts_path="$GITPATH/dock_scripts"
+    if [[ -f "$dock_scripts_path/dock_manager.sh" ]]; then
         echo "Running dock_manager.sh from local directory..."
-        bash "$GITPATH/dock_scripts/dock_manager.sh"
+        bash "$dock_scripts_path/dock_manager.sh" "$dock_scripts_path"
     else
         echo "Running dock_manager.sh from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/dock_scripts/dock_manager.sh)"
+        bash -c "$(curl -fsSL $GITHUB_BASE_URL/dock_scripts/dock_manager.sh)" _ "$dock_scripts_path"
     fi
 }
 
