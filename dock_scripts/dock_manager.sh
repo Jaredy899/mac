@@ -47,12 +47,15 @@ display_menu() {
     echo "  2. Remove Dock icons"
     echo "  0. Exit"
     read -p "Enter your choice (0-2): " choice
-    echo $choice
+    # Remove the echo and just let the read command handle the input
+    return 0
 }
 
 # Main loop
 while true; do
-    choice=$(display_menu)
+    display_menu
+    # Read the choice directly here instead of from display_menu output
+    read choice
     
     case $choice in
         1)
