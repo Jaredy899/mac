@@ -40,43 +40,38 @@ add_dock_items() {
     fi
 }
 
-# Function to display menu and get user choice
-display_menu() {
-    echo "Dock Management Menu:"
-    echo "  1. Add Dock icons"
-    echo "  2. Remove Dock icons"
-    echo "  0. Exit"
-    read -p "Enter your choice (0-2): " choice
-    # Remove the echo and just let the read command handle the input
-    return 0
+# Function to manage dock items
+manage_dock() {
+    while true; do
+        echo "Please select from the following options:"
+        echo "1) Add Dock icons"
+        echo "2) Remove Dock icons"
+        echo "0) Return to main menu"
+        read -p "Enter your choice (0-2): " choice
+
+        case $choice in
+            1)
+                echo "Adding Dock items..."
+                add_dock_items
+                ;;
+            2)
+                echo "Removing Dock items..."
+                remove_dock_items
+                ;;
+            0)
+                echo "Returning to main menu."
+                break
+                ;;
+            *)
+                echo "Invalid option. Please enter a number between 0 and 2."
+                ;;
+        esac
+        echo # Empty line for better readability
+    done
 }
 
-# Main loop
-while true; do
-    display_menu
-    # Read the choice directly here instead of from display_menu output
-    read choice
-    
-    case $choice in
-        1)
-            echo "Adding Dock items..."
-            add_dock_items
-            ;;
-        2)
-            echo "Removing Dock items..."
-            remove_dock_items
-            ;;
-        0)
-            echo "Exiting Dock management."
-            break
-            ;;
-        *)
-            echo "Invalid option. Please try again."
-            ;;
-    esac
-    
-    echo # Empty line for better readability
-done
+# Run the dock manager
+manage_dock
 
 echo "################################"
 echo "##                            ##"
