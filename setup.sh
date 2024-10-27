@@ -5,7 +5,7 @@ GITPATH="$(cd "$(dirname "$0")" && pwd)"
 echo "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary configuration files
-GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/main"
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main"
 
 # Function to install Homebrew
 install_homebrew() {
