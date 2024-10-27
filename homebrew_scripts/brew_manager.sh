@@ -40,55 +40,40 @@ run_uninstaller() {
     fi
 }
 
-# Main script execution
+# Function to manage brew operations
+manage_brew() {
+    while true; do
+        echo "Please select from the following options:"
+        echo "1) Run Brew Updater"
+        echo "2) Run Brew Installer"
+        echo "3) Run Brew Uninstaller"
+        echo "0) Return to main menu"
+        read -p "Enter your choice (0-3): " choice
 
-echo "###################################"
-echo "##                               ##"    
-echo "## Welcome to the Brew Manager!  ##"
-echo "##                               ##"
-echo "###################################" 
-
-# Function to display menu and get user choice
-display_menu() {
-    echo "Please select an option:"
-    echo "1. Run Brew Updater"
-    echo "2. Run Brew Installer"
-    echo "3. Run Brew Uninstaller"
-    echo "0. Exit"
-    read -p "Enter your choice (0-3): " choice
-    echo
-    return $choice
+        case $choice in
+            1)
+                echo "Running Brew Updater..."
+                run_updater
+                ;;
+            2)
+                echo "Running Brew Installer..."
+                run_installer
+                ;;
+            3)
+                echo "Running Brew Uninstaller..."
+                run_uninstaller
+                ;;
+            0)
+                echo "Returning to main menu."
+                break
+                ;;
+            *)
+                echo "Invalid option. Please enter a number between 0 and 3."
+                ;;
+        esac
+        echo # Empty line for better readability
+    done
 }
 
-# Main loop
-while true; do
-    display_menu
-    case $? in
-        1)
-            echo "Running Brew Updater..."
-            run_updater
-            ;;
-        2)
-            echo "Running Brew Installer..."
-            run_installer
-            ;;
-        3)
-            echo "Running Brew Uninstaller..."
-            run_uninstaller
-            ;;
-        0)
-            echo "Exiting Brew Manager."
-            break
-            ;;
-        *)
-            echo "Invalid choice. Please try again."
-            ;;
-    esac
-    echo
-done
-
-echo "#######################################"
-echo "##                                   ##" 
-echo "## Brew Manager operations complete. ##"
-echo "##                                   ##"
-echo "#######################################" 
+# Run the brew manager
+manage_brew
