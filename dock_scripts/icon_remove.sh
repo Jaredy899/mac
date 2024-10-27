@@ -31,8 +31,23 @@ apps_to_remove=()
 # Display a numbered list of current Dock applications and let user pick which ones to remove from the Dock
 if [ ${#current_dock_apps[@]} -gt 0 ]; then
     echo "Found the following applications in the Dock:"
-    for i in "${!current_dock_apps[@]}"; do
-        echo "$((i+1)). ${current_dock_apps[i]}"
+    
+    # Calculate number of rows needed for 3 columns
+    total_apps=${#current_dock_apps[@]}
+    rows=$(( (total_apps + 2) / 3 ))
+    
+    # Print in 3 columns
+    for ((i=0; i<rows; i++)); do
+        # Calculate indices for each column
+        idx1=$((i))
+        idx2=$((i + rows))
+        idx3=$((i + 2*rows))
+        
+        # Format each line with proper spacing
+        printf "%-3d. %-25s" "$((idx1+1))" "${current_dock_apps[idx1]:-}"
+        [[ $idx2 -lt $total_apps ]] && printf "%-3d. %-25s" "$((idx2+1))" "${current_dock_apps[idx2]:-}"
+        [[ $idx3 -lt $total_apps ]] && printf "%-3d. %-25s" "$((idx3+1))" "${current_dock_apps[idx3]:-}"
+        echo
     done
 
     echo "Enter the numbers of the applications you want to remove from the Dock, separated by spaces (e.g., 1 3 5):"
