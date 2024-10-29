@@ -46,6 +46,17 @@ run_myzsh() {
     fi
 }
 
+# Function to run the settings.sh script from local or GitHub
+run_settings() {
+    if [[ -f "$GITPATH/settings.sh" ]]; then
+        echo "Running settings.sh from local directory..."
+        bash "$GITPATH/settings.sh"
+    else
+        echo "Running settings.sh from GitHub..."
+        bash -c "$(curl -fsSL $GITHUB_BASE_URL/settings.sh)"
+    fi
+}
+
 # Check if Homebrew is installed and install it if not
 if ! command -v brew &> /dev/null; then
     echo "Homebrew is required but not installed. Installing Homebrew..."
@@ -67,8 +78,9 @@ while true; do
     echo "1) Run Homebrew Manager to manage Homebrew apps and casks"
     echo "2) Run Dock Manager to manage Dock items"
     echo "3) Run myzsh to enhance your terminal appearance"
+    echo "4) Run Settings Manager to configure system settings"
     echo "0) Exit"
-    read -p "Enter your choice (1-3): " choice
+    read -p "Enter your choice (1-4): " choice
 
     case $choice in
         1)
@@ -82,6 +94,10 @@ while true; do
         3)
             echo "Enhancing terminal appearance with myzsh..."
             run_myzsh
+            ;;
+        4)
+            echo "Running Settings Manager..."
+            run_settings
             ;;
         0)
             echo "Exiting setup script."
