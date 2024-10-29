@@ -23,7 +23,7 @@ alias web='cd /var/www/html'
 
 alias jc='bash -c "$(curl -fsSL jaredcervantes.com/mac)"'
 alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
-alias inv='nano $(fzf -m --preview="bat --color=always {}")'
+alias nfzf='nano $(fzf -m --preview="bat --color=always {}")'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
