@@ -40,11 +40,41 @@ toggle_window_tiling() {
     echo "Dock restarted with new settings"
 }
 
+# Function to configure trackpad settings
+configure_trackpad() {
+    echo "Configuring trackpad settings..."
+    
+    # Enable tap to click
+    defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+    defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+    
+    # Disable natural scrolling
+    defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+    
+    # Enable three finger swipe between pages
+    defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
+    defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
+    defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 1
+}
+
+# Function to configure dock settings
+configure_dock() {
+    echo "Configuring dock settings..."
+    
+    # Enable auto-hide for the dock
+    defaults write com.apple.dock autohide -bool true
+    
+    killall Dock
+    echo "Dock settings updated"
+}
+
 # Main execution
 echo "Starting macOS setup script..."
 
 # Run setup functions
 setup_kitty_shortcut
 toggle_window_tiling
+configure_trackpad
+configure_dock
 
 echo "Setup complete!" 
