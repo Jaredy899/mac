@@ -17,18 +17,8 @@ EOF
     # Make the script executable
     chmod +x ~/Library/Scripts/open-kitty.scpt
 
-    # Create a new Shortcuts automation using osascript
-    osascript << 'EOF'
-tell application "Shortcuts"
-    make new shortcut with properties {name:"Open Kitty"}
-    tell shortcut "Open Kitty"
-        add action "Open App" with properties {appName:"kitty"}
-        set keyboard shortcut to "command K"
-    end tell
-end tell
-EOF
-
-    echo "Kitty shortcut setup complete!"
+    echo "Kitty shortcut script created at ~/Library/Scripts/open-kitty.scpt"
+    echo "Please set up your keyboard shortcut manually in System Settings > Keyboard > Keyboard Shortcuts"
 }
 
 # Function to toggle window tiling
