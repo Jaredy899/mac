@@ -68,6 +68,25 @@ configure_dock() {
     echo "Dock settings updated"
 }
 
+# Function to enable SSH access
+enable_ssh() {
+    echo "Enabling SSH access..."
+    
+    # Check if running with sudo
+    if [ "$EUID" -ne 0 ]; then 
+        echo "Please run with sudo to enable SSH"
+        return 1
+    }
+    
+    # Enable remote login
+    sudo systemsetup -setremotelogin on
+    
+    # Verify SSH is enabled
+    sudo systemsetup -getremotelogin
+    
+    echo "SSH access enabled"
+}
+
 # Main execution
 echo "Starting macOS setup script..."
 
@@ -76,5 +95,6 @@ setup_kitty_shortcut
 toggle_window_tiling
 configure_trackpad
 configure_dock
+enable_ssh
 
 echo "Setup complete!" 
