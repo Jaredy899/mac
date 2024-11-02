@@ -76,7 +76,7 @@ enable_ssh() {
     if [ "$EUID" -ne 0 ]; then 
         echo "Please run with sudo to enable SSH"
         return 1
-    }
+    fi
     
     # Enable remote login
     sudo systemsetup -setremotelogin on
@@ -97,4 +97,4 @@ configure_trackpad
 configure_dock
 enable_ssh
 
-echo "Setup complete!" 
+echo "Setup complete!"
