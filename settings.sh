@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Check for sudo privileges and request if needed
+check_sudo() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "This script requires sudo privileges for some operations."
+        sudo -v || {
+            echo "Failed to obtain sudo privileges. Exiting."
+            exit 1
+        }
+        # Keep sudo alive
+        while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    fi
+}
+
 # Function to setup Kitty keyboard shortcut
 setup_kitty_shortcut() {
     echo "Setting up Kitty keyboard shortcut..."
@@ -72,12 +85,6 @@ configure_dock() {
 enable_ssh() {
     echo "Enabling SSH access..."
     
-    # Check if running with sudo
-    if [ "$EUID" -ne 0 ]; then 
-        echo "Please run with sudo to enable SSH"
-        return 1
-    fi
-    
     # Enable remote login
     sudo systemsetup -setremotelogin on
     
@@ -89,6 +96,9 @@ enable_ssh() {
 
 # Main execution
 echo "Starting macOS setup script..."
+
+# Add sudo check at the start
+check_sudo
 
 # Run setup functions
 setup_kitty_shortcut
