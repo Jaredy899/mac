@@ -88,7 +88,8 @@ function update_brew_items {
 
         if [ -n "$outdated_casks" ]; then
             echo "Outdated casks found. Updating..."
-            for cask in $outdated_casks; do
+            # First, get the complete list of installed casks
+            for cask in $(brew list --cask); do
                 echo -n "Updating $cask"
                 show_progress &
                 progress_pid=$!
