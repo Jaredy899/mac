@@ -46,15 +46,23 @@ function update_brew_item {
     show_progress &
     progress_pid=$!
 
-    # Update the item and suppress output
-    if brew upgrade "$item" > /dev/null 2>&1; then
+    # Update the item but capture the output this time
+    if output=$(brew upgrade "$item" 2>&1); then
         # Kill the progress bar process
         kill $progress_pid > /dev/null 2>&1
         echo -e "\r$item updated successfully!"
     else
-        # If brew upgrade fails, kill the progress bar and show error message
+        # Kill the progress bar process
         kill $progress_pid > /dev/null 2>&1
-        echo -e "\rFailed to update $item. Please check manually."
+        # Check if it's asking for a password
+        if echo "$output" | grep -q "password"; then
+            echo -e "\r$item requires password. Running without progress indicator..."
+            # Run the upgrade command directly without progress indicator
+            brew upgrade "$item"
+            echo "$item update completed!"
+        else
+            echo -e "\rFailed to update $item. Please check manually."
+        fi
     fi
 }
 
@@ -93,12 +101,18 @@ function update_brew_items {
                 echo -n "Updating $cask"
                 show_progress &
                 progress_pid=$!
-                if brew install --cask "$cask" > /dev/null 2>&1; then
+                if output=$(brew install --cask "$cask" 2>&1); then
                     kill $progress_pid > /dev/null 2>&1
                     echo -e "\r$cask updated successfully!"
                 else
                     kill $progress_pid > /dev/null 2>&1
-                    echo -e "\rFailed to update $cask. Please check manually."
+                    if echo "$output" | grep -q "password"; then
+                        echo -e "\r$cask requires password. Running without progress indicator..."
+                        brew install --cask "$cask"
+                        echo "$cask update completed!"
+                    else
+                        echo -e "\rFailed to update $cask. Please check manually."
+                    fi
                 fi
             done
         fi
