@@ -76,50 +76,43 @@ function update_brew_items {
 
     # Start the spinner in the background
     (brew outdated --formula > /tmp/brew_outdated_formula.txt) &
-    (brew outdated --cask > /tmp/brew_outdated_casks.txt) &
     spinner_pid=$!
     show_spinner $spinner_pid
 
-    # Read outdated items from the files
+    # Read outdated formulae from the file
     outdated_formulae=$(cat /tmp/brew_outdated_formula.txt)
-    outdated_casks=$(cat /tmp/brew_outdated_casks.txt)
 
-    if [ -z "$outdated_formulae" ] && [ -z "$outdated_casks" ]; then
-        echo "No updates needed."
-    else
-        if [ -n "$outdated_formulae" ]; then
-            echo "Outdated formulae found. Updating..."
-            for item in $outdated_formulae; do
-                update_brew_item "$item"
-            done
-        fi
-
-        if [ -n "$outdated_casks" ]; then
-            echo "Outdated casks found. Updating..."
-            # First, get the complete list of installed casks
-            for cask in $(brew list --cask); do
-                echo -n "Updating $cask"
-                show_progress &
-                progress_pid=$!
-                if output=$(brew install --cask "$cask" 2>&1); then
-                    kill $progress_pid > /dev/null 2>&1
-                    echo -e "\r$cask updated successfully!"
-                else
-                    kill $progress_pid > /dev/null 2>&1
-                    if echo "$output" | grep -q "password"; then
-                        echo -e "\r$cask requires password. Running without progress indicator..."
-                        brew install --cask "$cask"
-                        echo "$cask update completed!"
-                    else
-                        echo -e "\rFailed to update $cask. Please check manually."
-                    fi
-                fi
-            done
-        fi
+    # Handle formula updates
+    if [ -n "$outdated_formulae" ]; then
+        echo "Outdated formulae found. Updating..."
+        for item in $outdated_formulae; do
+            update_brew_item "$item"
+        done
     fi
 
+    # Handle cask updates - reinstall all casks
+    echo "Updating all casks..."
+    for cask in $installed_casks; do
+        echo -n "Updating $cask"
+        show_progress &
+        progress_pid=$!
+        if output=$(brew install --cask "$cask" 2>&1); then
+            kill $progress_pid > /dev/null 2>&1
+            echo -e "\r$cask updated successfully!"
+        else
+            kill $progress_pid > /dev/null 2>&1
+            if echo "$output" | grep -q "password"; then
+                echo -e "\r$cask requires password. Running without progress indicator..."
+                brew install --cask "$cask"
+                echo "$cask update completed!"
+            else
+                echo -e "\rFailed to update $cask. Please check manually."
+            fi
+        fi
+    done
+
     # Clean up temporary files
-    rm /tmp/brew_outdated_formula.txt /tmp/brew_outdated_casks.txt
+    rm /tmp/brew_outdated_formula.txt
 }
 
 # Main script execution
