@@ -1,8 +1,17 @@
 #!/usr/bin/env zsh
 
+# POSIX-compliant color definitions
+ESC=$(printf '\033')
+RC="${ESC}[0m"    # Reset
+RED="${ESC}[31m"  # Red
+GREEN="${ESC}[32m"   # Green
+YELLOW="${ESC}[33m"  # Yellow
+BLUE="${ESC}[34m"    # Blue
+CYAN="${ESC}[36m"    # Cyan
+
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "$0")" && pwd)"
-echo "GITPATH is set to: $GITPATH"
+printf "%sGITPATH is set to: %s%s\n" "${CYAN}" "$GITPATH" "${RC}"
 
 # GitHub URL base for the necessary configuration files
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/myzsh"
@@ -12,23 +21,23 @@ installDepend() {
     # List of dependencies
     DEPENDENCIES=(zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
-    echo "Installing dependencies..."
+    printf "%sInstalling dependencies...%s\n" "${CYAN}" "${RC}"
     for package in "${DEPENDENCIES[@]}"; do
-        echo "Installing $package..."
+        printf "%sInstalling %s...%s\n" "${CYAN}" "$package" "${RC}"
         if ! brew install "$package"; then
-            echo "Failed to install $package. Please check your brew installation."
+            printf "%sFailed to install %s. Please check your brew installation.%s\n" "${RED}" "$package" "${RC}"
             exit 1
         fi
     done
 
-    # List of cask dependencies, including the Nerd Font
+    # List of cask dependencies
     CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-fira-code-nerd-font")
 
-    echo "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}..."
+    printf "%sInstalling cask dependencies: %s%s\n" "${CYAN}" "${CASK_DEPENDENCIES[*]}" "${RC}"
     for cask in "${CASK_DEPENDENCIES[@]}"; do
-        echo "Installing $cask..."
+        printf "%sInstalling %s...%s\n" "${CYAN}" "$cask" "${RC}"
         if ! brew install --cask "$cask"; then
-            echo "Failed to install $cask. Please check your brew installation."
+            printf "%sFailed to install %s. Please check your brew installation.%s\n" "${RED}" "$cask" "${RC}"
             exit 1
         fi
     done
@@ -39,102 +48,70 @@ installDepend() {
     fi
 }
 
-# Function to link or copy fastfetch and starship configurations, replacing them each time
+# Function to link or copy configurations
 linkConfig() {
     USER_HOME="$HOME"
     CONFIG_DIR="$USER_HOME/.config"
-
-    # Fastfetch configuration
-    FASTFETCH_CONFIG_DIR="$CONFIG_DIR/fastfetch"
-    FASTFETCH_CONFIG="$FASTFETCH_CONFIG_DIR/config.jsonc"
-
-    # Create the configuration directory if it does not exist
-    mkdir -p "$FASTFETCH_CONFIG_DIR"
-
-    # Always replace or link the config.jsonc file
+    
+    # Create config directories
+    mkdir -p "$CONFIG_DIR/fastfetch"
+    
+    # Handle fastfetch config
+    FASTFETCH_CONFIG="$CONFIG_DIR/fastfetch/config.jsonc"
     if [ -f "$GITPATH/config.jsonc" ]; then
+        printf "%sLinking config.jsonc...%s\n" "${CYAN}" "${RC}"
         ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
-            echo "Failed to create symbolic link for config.jsonc"
+            printf "%sFailed to create symbolic link for config.jsonc%s\n" "${RED}" "${RC}"
             exit 1
         }
-        echo "Linked config.jsonc to $FASTFETCH_CONFIG."
     else
-        echo "config.jsonc not found in $GITPATH. Downloading from GitHub..."
+        printf "%sDownloading config.jsonc from GitHub...%s\n" "${YELLOW}" "${RC}"
         curl -fsSL "$GITHUB_BASE_URL/config.jsonc" -o "$FASTFETCH_CONFIG" || {
-            echo "Failed to download config.jsonc from GitHub."
+            printf "%sFailed to download config.jsonc from GitHub.%s\n" "${RED}" "${RC}"
             exit 1
         }
-        echo "Downloaded config.jsonc from GitHub to $FASTFETCH_CONFIG."
     fi
 
-    # Starship configuration
+    # Handle starship config
     STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
-
-    # Always replace or link the starship.toml file
     if [ -f "$GITPATH/starship.toml" ]; then
+        printf "%sLinking starship.toml...%s\n" "${CYAN}" "${RC}"
         ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
-            echo "Failed to create symbolic link for starship.toml"
+            printf "%sFailed to create symbolic link for starship.toml%s\n" "${RED}" "${RC}"
             exit 1
         }
-        echo "Linked starship.toml to $STARSHIP_CONFIG."
     else
-        echo "starship.toml not found in $GITPATH. Downloading from GitHub..."
+        printf "%sDownloading starship.toml from GitHub...%s\n" "${YELLOW}" "${RC}"
         curl -fsSL "$GITHUB_BASE_URL/starship.toml" -o "$STARSHIP_CONFIG" || {
-            echo "Failed to download starship.toml from GitHub."
+            printf "%sFailed to download starship.toml from GitHub.%s\n" "${RED}" "${RC}"
             exit 1
         }
-        echo "Downloaded starship.toml from GitHub to $STARSHIP_CONFIG."
     fi
 }
 
-# Function to replace .zshrc while keeping aliases separate
+# Function to replace .zshrc
 replace_zshrc() {
     USER_HOME="$HOME"
     ZSHRC_FILE="$USER_HOME/.zshrc"
     ZSHRC_SOURCE="$GITPATH/.zshrc"
-    ALIASES_FILE="$USER_HOME/.zshrc_aliases"
 
-    # Backup existing .zshrc if it exists
     if [ -f "$ZSHRC_FILE" ]; then
-        echo "Backing up existing .zshrc to .zshrc.backup..."
+        printf "%sBacking up existing .zshrc to .zshrc.backup...%s\n" "${YELLOW}" "${RC}"
         cp "$ZSHRC_FILE" "$ZSHRC_FILE.backup"
-        echo "Your previous .zshrc has been backed up as .zshrc.backup in your home directory."
     fi
 
-    # Replace .zshrc with the one from myzsh folder or download from GitHub
     if [ -f "$ZSHRC_SOURCE" ]; then
-        echo "Replacing .zshrc with the new version from $GITPATH..."
+        printf "%sReplacing .zshrc with the new version...%s\n" "${CYAN}" "${RC}"
         cp "$ZSHRC_SOURCE" "$ZSHRC_FILE"
     else
-        echo ".zshrc not found in $GITPATH. Downloading from GitHub..."
+        printf "%sDownloading .zshrc from GitHub...%s\n" "${YELLOW}" "${RC}"
         if curl -fsSL "$GITHUB_BASE_URL/.zshrc" -o "$ZSHRC_FILE"; then
-            echo "Downloaded .zshrc from GitHub to $ZSHRC_FILE."
+            printf "%sDownloaded .zshrc successfully.%s\n" "${GREEN}" "${RC}"
         else
-            echo "Failed to download .zshrc from GitHub."
+            printf "%sFailed to download .zshrc from GitHub.%s\n" "${RED}" "${RC}"
             exit 1
         fi
     fi
-
-    # Ensure .zshrc sources the aliases file
-    # if ! grep -q "source $ALIASES_FILE" "$ZSHRC_FILE"; then
-    #     echo "source $ALIASES_FILE" >> "$ZSHRC_FILE"
-    #     echo "Added sourcing of $ALIASES_FILE to .zshrc."
-    # fi
-
-    echo ".zshrc replaced and updated successfully."
-
-    # Inform the user about the separate .zshrc_aliases file
-    # echo "#######################################################"
-    # echo "##                                                   ##"
-    # echo "## A separate .zshrc_aliases file is being used      ##"
-    # echo "## to keep your aliases and custom settings.         ##"
-    # echo "## Place your aliases and other persistent           ##"
-    # echo "## configurations in ~/.zshrc_aliases.               ##"
-    # echo "## This file will not be overwritten by this script, ##"
-    # echo "## ensuring your custom settings are                 ##"
-    # echo "## kept intact.                                      ##"                                     
-    # echo "##                                                   ##"
-    # echo "#######################################################"
 }
 
 # Run all functions
@@ -142,10 +119,11 @@ installDepend
 linkConfig
 replace_zshrc
 
-echo "###########################################################################"
-echo "##                                                                      ##"
-echo "## Use the terminal of your choice and change the font to Fira-Code NF. ##"
-echo "##                                                                      ##"
-echo "##                        Setup completed successfully.                 ##"
-echo "##                                                                      ##"
-echo "##########################################################################"
+# Final message
+printf "%s###########################################################################%s\n" "${YELLOW}" "${RC}"
+printf "%s##%s                                                                      %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##%s%s Use the terminal of your choice and change the font to Fira-Code NF. %s##%s\n" "${YELLOW}" "${RC}" "${CYAN}" "${YELLOW}" "${RC}"
+printf "%s##%s                                                                      %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##%s%s                        Setup completed successfully.                 %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
+printf "%s##%s                                                                      %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##########################################################################%s\n" "${YELLOW}" "${RC}"

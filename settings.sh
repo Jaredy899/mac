@@ -1,11 +1,20 @@
 #!/bin/bash
 
+# POSIX-compliant color definitions
+ESC=$(printf '\033')
+RC="${ESC}[0m"    # Reset
+RED="${ESC}[31m"  # Red
+GREEN="${ESC}[32m"   # Green
+YELLOW="${ESC}[33m"  # Yellow
+BLUE="${ESC}[34m"    # Blue
+CYAN="${ESC}[36m"    # Cyan
+
 # Check for sudo privileges and request if needed
 check_sudo() {
     if [ "$EUID" -ne 0 ]; then
-        echo "This script requires sudo privileges for some operations."
+        printf "%sThis script requires sudo privileges for some operations.%s\n" "${YELLOW}" "${RC}"
         sudo -v || {
-            echo "Failed to obtain sudo privileges. Exiting."
+            printf "%sFailed to obtain sudo privileges. Exiting.%s\n" "${RED}" "${RC}"
             exit 1
         }
         # Keep sudo alive
@@ -15,96 +24,85 @@ check_sudo() {
 
 # Function to setup Kitty keyboard shortcut
 setup_kitty_shortcut() {
-    echo "Setting up Kitty keyboard shortcut..."
+    printf "%sSetting up Kitty keyboard shortcut...%s\n" "${CYAN}" "${RC}"
     
     # Create Scripts directory if it doesn't exist
     mkdir -p ~/Library/Scripts
     
-    # Create the AppleScript to handle the keyboard shortcut
+    # Create the AppleScript
     cat << 'EOF' > ~/Library/Scripts/open-kitty.scpt
 tell application "kitty"
     activate
 end tell
 EOF
 
-    # Make the script executable
     chmod +x ~/Library/Scripts/open-kitty.scpt
 
-    echo "Kitty shortcut script created at ~/Library/Scripts/open-kitty.scpt"
-    echo "Please set up your keyboard shortcut manually in System Settings > Keyboard > Keyboard Shortcuts"
+    printf "%sKitty shortcut script created at ~/Library/Scripts/open-kitty.scpt%s\n" "${GREEN}" "${RC}"
+    printf "%sPlease set up your keyboard shortcut manually in System Settings > Keyboard > Keyboard Shortcuts%s\n" "${YELLOW}" "${RC}"
 }
 
 # Function to toggle window tiling
 toggle_window_tiling() {
-    echo "Toggling window tiling settings..."
+    printf "%sToggling window tiling settings...%s\n" "${CYAN}" "${RC}"
     
     current_state=$(defaults read com.apple.dock window-tiling-enabled)
     if [ "$current_state" = "1" ]; then
         defaults write com.apple.dock window-tiling-enabled -bool false
         defaults write com.apple.dock window-tiling-margin -int 0
-        echo "Window tiling disabled"
+        printf "%sWindow tiling disabled%s\n" "${YELLOW}" "${RC}"
     else
         defaults write com.apple.dock window-tiling-enabled -bool true
         defaults write com.apple.dock window-tiling-margin -int 5
-        echo "Window tiling enabled"
+        printf "%sWindow tiling enabled%s\n" "${GREEN}" "${RC}"
     fi
     
     killall Dock
-    echo "Dock restarted with new settings"
+    printf "%sDock restarted with new settings%s\n" "${GREEN}" "${RC}"
 }
 
 # Function to configure trackpad settings
 configure_trackpad() {
-    echo "Configuring trackpad settings..."
+    printf "%sConfiguring trackpad settings...%s\n" "${CYAN}" "${RC}"
     
-    # Enable tap to click
     defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
     defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
-    
-    # Disable natural scrolling
     defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
-    
-    # Enable three finger swipe between pages
     defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
     defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
     defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 1
+    
+    printf "%sTrackpad settings updated successfully%s\n" "${GREEN}" "${RC}"
 }
 
 # Function to configure dock settings
 configure_dock() {
-    echo "Configuring dock settings..."
+    printf "%sConfiguring dock settings...%s\n" "${CYAN}" "${RC}"
     
-    # Enable auto-hide for the dock
     defaults write com.apple.dock autohide -bool true
-    
     killall Dock
-    echo "Dock settings updated"
+    
+    printf "%sDock settings updated%s\n" "${GREEN}" "${RC}"
 }
 
 # Function to enable SSH access
 enable_ssh() {
-    echo "Enabling SSH access..."
+    printf "%sEnabling SSH access...%s\n" "${CYAN}" "${RC}"
     
-    # Enable remote login
     sudo systemsetup -setremotelogin on
-    
-    # Verify SSH is enabled
     sudo systemsetup -getremotelogin
     
-    echo "SSH access enabled"
+    printf "%sSSH access enabled%s\n" "${GREEN}" "${RC}"
 }
 
 # Main execution
-echo "Starting macOS setup script..."
+printf "%sStarting macOS setup script...%s\n" "${CYAN}" "${RC}"
 
-# Add sudo check at the start
 check_sudo
-
-# Run setup functions
 setup_kitty_shortcut
 toggle_window_tiling
 configure_trackpad
 configure_dock
 enable_ssh
 
-echo "Setup complete!"
+printf "%sSetup complete!%s\n" "${GREEN}" "${RC}"

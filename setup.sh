@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# POSIX-compliant color definitions using printf
+# Store the escape sequence in a more portable way
+ESC=$(printf '\033')
+RC="${ESC}[0m"
+RED="${ESC}[31m"
+YELLOW="${ESC}[33m"
+CYAN="${ESC}[36m"
+GREEN="${ESC}[32m"
+
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "$0")" && pwd)"
 echo "GITPATH is set to: $GITPATH"
@@ -74,13 +83,14 @@ fi
 
 # Menu to choose which scripts to run
 while true; do
-    echo "Please select from the following options:"
-    echo "1) Run Homebrew Manager to manage Homebrew apps and casks"
-    echo "2) Run Dock Manager to manage Dock items"
-    echo "3) Run myzsh to enhance your terminal appearance"
-    echo "4) Run Settings Manager to configure system settings"
-    echo "0) Exit"
-    read -p "Enter your choice (1-4): " choice
+    printf "%sPlease select from the following options:%s\n" "${CYAN}" "${RC}"
+    printf "%s1)%s Run Homebrew Manager to manage Homebrew apps and casks\n" "${GREEN}" "${RC}"
+    printf "%s2)%s Run Dock Manager to manage Dock items\n" "${GREEN}" "${RC}"
+    printf "%s3)%s Run myzsh to enhance your terminal appearance\n" "${GREEN}" "${RC}"
+    printf "%s4)%s Run Settings Manager to configure system settings\n" "${GREEN}" "${RC}"
+    printf "%s0)%s Exit\n" "${RED}" "${RC}"
+    printf "Enter your choice (1-4): "
+    read choice
 
     case $choice in
         1)
@@ -109,8 +119,9 @@ while true; do
     esac
 done
 
-echo "#############################"
-echo "##                         ##"
-echo "## Setup script completed. ##"
-echo "##                         ##"
-echo "#############################"
+# Update the completion message
+printf "%s#############################%s\n" "${YELLOW}" "${RC}"
+printf "%s##%s                         %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##%s%s Setup script completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
+printf "%s##%s                         %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s#############################%s\n" "${YELLOW}" "${RC}"

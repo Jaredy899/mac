@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# POSIX-compliant color definitions
+ESC=$(printf '\033')
+RC="${ESC}[0m"    # Reset
+RED="${ESC}[31m"  # Red
+GREEN="${ESC}[32m"   # Green
+YELLOW="${ESC}[33m"  # Yellow
+BLUE="${ESC}[34m"    # Blue
+CYAN="${ESC}[36m"    # Cyan
+
 # Check if a path argument is provided
 if [ -n "$1" ]; then
     GITPATH="$1"
@@ -7,9 +16,9 @@ else
     GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
-echo "GITPATH is set to: $GITPATH"
-echo "Current working directory: $(pwd)"
-echo "Script location: ${BASH_SOURCE[0]}"
+printf "%sGITPATH is set to: %s%s\n" "${CYAN}" "$GITPATH" "${RC}"
+printf "%sCurrent working directory: %s%s\n" "${CYAN}" "$(pwd)" "${RC}"
+printf "%sScript location: %s%s\n" "${CYAN}" "${BASH_SOURCE[0]}" "${RC}"
 
 # GitHub URL base for the necessary Dock scripts
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/dock_scripts/"
@@ -17,12 +26,12 @@ GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main
 # Function to remove Dock items using icon_remove.sh
 remove_dock_items() {
     local script_path="$GITPATH/icon_remove.sh"
-    echo "Checking for icon_remove.sh at: $script_path"
+    printf "%sChecking for icon_remove.sh at: %s%s\n" "${CYAN}" "$script_path" "${RC}"
     if [[ -f "$script_path" ]]; then
-        echo "Running icon_remove.sh from local directory..."
+        printf "%sRunning icon_remove.sh from local directory...%s\n" "${GREEN}" "${RC}"
         bash "$script_path"
     else
-        echo "Local icon_remove.sh not found. Running from GitHub..."
+        printf "%sLocal icon_remove.sh not found. Running from GitHub...%s\n" "${YELLOW}" "${RC}"
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_remove.sh)"
     fi
 }
@@ -30,12 +39,12 @@ remove_dock_items() {
 # Function to add Dock items using icon_add.sh
 add_dock_items() {
     local script_path="$GITPATH/icon_add.sh"
-    echo "Checking for icon_add.sh at: $script_path"
+    printf "%sChecking for icon_add.sh at: %s%s\n" "${CYAN}" "$script_path" "${RC}"
     if [[ -f "$script_path" ]]; then
-        echo "Running icon_add.sh from local directory..."
+        printf "%sRunning icon_add.sh from local directory...%s\n" "${GREEN}" "${RC}"
         bash "$script_path"
     else
-        echo "Local icon_add.sh not found. Running from GitHub..."
+        printf "%sLocal icon_add.sh not found. Running from GitHub...%s\n" "${YELLOW}" "${RC}"
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_add.sh)"
     fi
 }
@@ -43,38 +52,39 @@ add_dock_items() {
 # Function to manage dock items
 manage_dock() {
     while true; do
-        echo "Please select from the following options:"
-        echo "1) Add Dock icons"
-        echo "2) Remove Dock icons"
-        echo "0) Return to main menu"
-        read -p "Enter your choice (0-2): " choice
+        printf "%sPlease select from the following options:%s\n" "${CYAN}" "${RC}"
+        printf "%s1)%s Add Dock icons\n" "${GREEN}" "${RC}"
+        printf "%s2)%s Remove Dock icons\n" "${GREEN}" "${RC}"
+        printf "%s0)%s Return to main menu\n" "${RED}" "${RC}"
+        printf "Enter your choice (0-2): "
+        read choice
 
         case $choice in
             1)
-                echo "Adding Dock items..."
+                printf "%sAdding Dock items...%s\n" "${CYAN}" "${RC}"
                 add_dock_items
                 ;;
             2)
-                echo "Removing Dock items..."
+                printf "%sRemoving Dock items...%s\n" "${CYAN}" "${RC}"
                 remove_dock_items
                 ;;
             0)
-                echo "Returning to main menu."
+                printf "%sReturning to main menu.%s\n" "${YELLOW}" "${RC}"
                 break
                 ;;
             *)
-                echo "Invalid option. Please enter a number between 0 and 2."
+                printf "%sInvalid option. Please enter a number between 0 and 2.%s\n" "${RED}" "${RC}"
                 ;;
         esac
-        echo # Empty line for better readability
+        printf "\n"
     done
 }
 
 # Run the dock manager
 manage_dock
 
-echo "################################"
-echo "##                            ##"
-echo "## Dock management completed. ##"
-echo "##                            ##"
-echo "################################"
+printf "%s################################%s\n" "${YELLOW}" "${RC}"
+printf "%s##%s                            %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##%s%s Dock management completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
+printf "%s##%s                            %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s################################%s\n" "${YELLOW}" "${RC}"

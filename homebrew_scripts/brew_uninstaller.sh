@@ -1,10 +1,19 @@
 #!/bin/bash
 
+# POSIX-compliant color definitions
+ESC=$(printf '\033')
+RC="${ESC}[0m"    # Reset
+RED="${ESC}[31m"  # Red
+GREEN="${ESC}[32m"   # Green
+YELLOW="${ESC}[33m"  # Yellow
+BLUE="${ESC}[34m"    # Blue
+CYAN="${ESC}[36m"    # Cyan
+
 # Function to uninstall selected casks
 function uninstall_casks {
     local selected_casks=("$@")
     for cask in "${selected_casks[@]}"; do                      
-        echo "Uninstalling $cask..."
+        printf "%sUninstalling %s...%s\n" "${CYAN}" "$cask" "${RC}"
         brew uninstall --cask "$cask"
     done
 }
@@ -20,33 +29,33 @@ function print_columns {
         for (( j=0; j<$num_columns; j++ )); do
             index=$(( i + j * rows ))
             if [ $index -lt $num_apps ]; then
-                printf "%-25s" "$((index + 1)). ${app_list[$index]}"
+                printf "%s%-3d)%s %-22s" "${GREEN}" "$((index + 1))" "${RC}" "${app_list[$index]}"
             fi
         done
-        echo
+        printf "\n"
     done
 }
 
 # Function to list installed casks and prompt for uninstallation
 function list_and_uninstall {
-    echo "Checking installed Homebrew casks..."
+    printf "%sChecking installed Homebrew casks...%s\n" "${CYAN}" "${RC}"
     installed_casks=$(brew list --cask)
 
     if [ -z "$installed_casks" ]; then
-        echo "No casks are currently installed."
+        printf "%sNo casks are currently installed.%s\n" "${YELLOW}" "${RC}"
         return
     fi
 
-    echo "Installed casks:"
+    printf "%sInstalled casks:%s\n" "${CYAN}" "${RC}"
     cask_list=()
-    i=1
     for cask in $installed_casks; do
         cask_list+=("$cask")
     done
 
     print_columns "${cask_list[@]}"
 
-    read -p "Enter the numbers of the casks you want to uninstall (separated by space), or press Enter to skip: " -a selected
+    printf "Enter the numbers of the casks you want to uninstall (separated by space), or press Enter to skip: "
+    read -a selected
     if [ ${#selected[@]} -gt 0 ]; then
         selected_casks=()
         for number in "${selected[@]}"; do
@@ -54,15 +63,16 @@ function list_and_uninstall {
         done
         uninstall_casks "${selected_casks[@]}"
     else
-        echo "No casks selected for uninstallation."
+        printf "%sNo casks selected for uninstallation.%s\n" "${YELLOW}" "${RC}"
     fi
 }
 
 # Main script
 list_and_uninstall
 
-echo "############################"
-echo "##                        ##"
-echo "## Uninstaller completed. ##"
-echo "##                        ##"
-echo "############################"
+# Completion message
+printf "%s############################%s\n" "${YELLOW}" "${RC}"
+printf "%s##%s                        %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##%s%s Uninstaller completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
+printf "%s##%s                        %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s############################%s\n" "${YELLOW}" "${RC}"

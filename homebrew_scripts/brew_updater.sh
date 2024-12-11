@@ -1,17 +1,26 @@
 #!/bin/bash
 
+# POSIX-compliant color definitions
+ESC=$(printf '\033')
+RC="${ESC}[0m"    # Reset
+RED="${ESC}[31m"  # Red
+GREEN="${ESC}[32m"   # Green
+YELLOW="${ESC}[33m"  # Yellow
+BLUE="${ESC}[34m"    # Blue
+CYAN="${ESC}[36m"    # Cyan
+
 # Function to check if pv is installed, and install it if not
 function check_and_install_pv {
     if ! command -v pv &> /dev/null; then
-        echo "pv (Pipe Viewer) is not installed. Installing now..."
+        printf "%spv (Pipe Viewer) is not installed. Installing now...%s\n" "${YELLOW}" "${RC}"
         brew install pv
-        echo "pv installed successfully."
+        printf "%spv installed successfully.%s\n" "${GREEN}" "${RC}"
     fi
 }
 
 # Function to refresh sudo credentials
 function refresh_sudo {
-    echo "Refreshing sudo credentials..."
+    printf "%sRefreshing sudo credentials...%s\n" "${CYAN}" "${RC}"
     sudo -v
 }
 
@@ -22,17 +31,17 @@ function show_spinner {
     local spinner=('|' '/' '-' '\')
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         for i in "${spinner[@]}"; do
-            echo -ne "\rChecking for updates... $i"
+            printf "\r%sChecking for updates... %s%s" "${CYAN}" "$i" "${RC}"
             sleep $delay
         done
     done
-    echo -ne "\r"
+    printf "\r"
 }
 
 # Function to show a simple progress bar using dots
 function show_progress {
     while true; do
-        echo -n "."
+        printf "%s.%s" "${CYAN}" "${RC}"
         sleep 0.5
     done
 }
@@ -40,89 +49,77 @@ function show_progress {
 # Function to update a specific Homebrew item if it's outdated
 function update_brew_item {
     local item=$1
-    echo -n "Updating $item"
+    printf "%sUpdating %s%s" "${CYAN}" "$item" "${RC}"
 
-    # Start progress bar in the background
     show_progress &
     progress_pid=$!
 
-    # Update the item but capture the output this time
     if output=$(brew upgrade "$item" 2>&1); then
-        # Kill the progress bar process
         kill $progress_pid > /dev/null 2>&1
-        echo -e "\r$item updated successfully!"
+        printf "\r%s%s updated successfully!%s\n" "${GREEN}" "$item" "${RC}"
     else
-        # Kill the progress bar process
         kill $progress_pid > /dev/null 2>&1
-        # Check if it's asking for a password
         if echo "$output" | grep -q "password"; then
-            echo -e "\r$item requires password. Running without progress indicator..."
-            # Run the upgrade command directly without progress indicator
+            printf "\r%s%s requires password. Running without progress indicator...%s\n" "${YELLOW}" "$item" "${RC}"
             brew upgrade "$item"
-            echo "$item update completed!"
+            printf "%s%s update completed!%s\n" "${GREEN}" "$item" "${RC}"
         else
-            echo -e "\rFailed to update $item. Please check manually."
+            printf "\r%sFailed to update %s. Please check manually.%s\n" "${RED}" "$item" "${RC}"
         fi
     fi
 }
 
 # Function to update all apps and casks
 function update_brew_items {
-    # Get a list of installed formulae (apps) and casks
     installed_formulae=$(brew list --formula)
     installed_casks=$(brew list --cask)
 
-    echo "Checking for updates to Homebrew apps and casks..."
+    printf "%sChecking for updates to Homebrew apps and casks...%s\n" "${CYAN}" "${RC}"
 
-    # Start the spinner in the background
     (brew outdated --formula > /tmp/brew_outdated_formula.txt) &
     spinner_pid=$!
     show_spinner $spinner_pid
 
-    # Read outdated formulae from the file
     outdated_formulae=$(cat /tmp/brew_outdated_formula.txt)
 
-    # Handle formula updates
     if [ -n "$outdated_formulae" ]; then
-        echo "Outdated formulae found. Updating..."
+        printf "%sOutdated formulae found. Updating...%s\n" "${YELLOW}" "${RC}"
         for item in $outdated_formulae; do
             update_brew_item "$item"
         done
     fi
 
-    # Handle cask updates - reinstall all casks
-    echo "Updating all casks..."
+    printf "%sUpdating all casks...%s\n" "${CYAN}" "${RC}"
     for cask in $installed_casks; do
-        echo -n "Updating $cask"
+        printf "%sUpdating %s%s" "${CYAN}" "$cask" "${RC}"
         show_progress &
         progress_pid=$!
         if output=$(brew install --cask "$cask" 2>&1); then
             kill $progress_pid > /dev/null 2>&1
-            echo -e "\r$cask updated successfully!"
+            printf "\r%s%s updated successfully!%s\n" "${GREEN}" "$cask" "${RC}"
         else
             kill $progress_pid > /dev/null 2>&1
             if echo "$output" | grep -q "password"; then
-                echo -e "\r$cask requires password. Running without progress indicator..."
+                printf "\r%s%s requires password. Running without progress indicator...%s\n" "${YELLOW}" "$cask" "${RC}"
                 brew install --cask "$cask"
-                echo "$cask update completed!"
+                printf "%s%s update completed!%s\n" "${GREEN}" "$cask" "${RC}"
             else
-                echo -e "\rFailed to update $cask. Please check manually."
+                printf "\r%sFailed to update %s. Please check manually.%s\n" "${RED}" "$cask" "${RC}"
             fi
         fi
     done
 
-    # Clean up temporary files
     rm /tmp/brew_outdated_formula.txt
 }
 
 # Main script execution
-check_and_install_pv  # Ensure pv is installed before proceeding
-refresh_sudo  # Refresh sudo credentials to avoid mid-script password prompts
+check_and_install_pv
+refresh_sudo
 update_brew_items
 
 # Final message
-echo "#################################################"
-echo "##                                             ##"
-echo "## All Homebrew apps and casks are up to date! ##"
-echo "##                                             ##"
-echo "#################################################"
+printf "%s#################################################%s\n" "${YELLOW}" "${RC}"
+printf "%s##%s                                             %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s##%s%s All Homebrew apps and casks are up to date! %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
+printf "%s##%s                                             %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
+printf "%s#################################################%s\n" "${YELLOW}" "${RC}"

@@ -1,8 +1,17 @@
 #!/bin/bash
 
+# POSIX-compliant color definitions
+ESC=$(printf '\033')
+RC="${ESC}[0m"    # Reset
+RED="${ESC}[31m"  # Red
+GREEN="${ESC}[32m"   # Green
+YELLOW="${ESC}[33m"  # Yellow
+BLUE="${ESC}[34m"    # Blue
+CYAN="${ESC}[36m"    # Cyan
+
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$(cd "$(dirname "$0")" && pwd)"
-echo "GITPATH is set to: $GITPATH"
+printf "%sGITPATH is set to: %s%s\n" "${CYAN}" "$GITPATH" "${RC}"
 
 # GitHub URL base for the necessary Homebrew scripts
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/homebrew_scripts"
@@ -10,10 +19,10 @@ GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main
 # Function to run the updater script
 run_updater() {
     if [[ -f "$GITPATH/brew_updater.sh" ]]; then
-        echo "Running Brew Updater from local directory..."
+        printf "%sRunning Brew Updater from local directory...%s\n" "${GREEN}" "${RC}"
         bash "$GITPATH/brew_updater.sh"
     else
-        echo "Running Brew Updater from GitHub..."
+        printf "%sRunning Brew Updater from GitHub...%s\n" "${YELLOW}" "${RC}"
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/brew_updater.sh)"
     fi
 }
@@ -21,10 +30,10 @@ run_updater() {
 # Function to run the installer script
 run_installer() {
     if [[ -f "$GITPATH/brew_installer.sh" ]]; then
-        echo "Running Brew Installer from local directory..."
+        printf "%sRunning Brew Installer from local directory...%s\n" "${GREEN}" "${RC}"
         bash "$GITPATH/brew_installer.sh"
     else
-        echo "Running Brew Installer from GitHub..."
+        printf "%sRunning Brew Installer from GitHub...%s\n" "${YELLOW}" "${RC}"
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/brew_installer.sh)"
     fi
 }
@@ -32,10 +41,10 @@ run_installer() {
 # Function to run the uninstaller script
 run_uninstaller() {
     if [[ -f "$GITPATH/brew_uninstaller.sh" ]]; then
-        echo "Running Brew Uninstaller from local directory..."
+        printf "%sRunning Brew Uninstaller from local directory...%s\n" "${GREEN}" "${RC}"
         bash "$GITPATH/brew_uninstaller.sh"
     else
-        echo "Running Brew Uninstaller from GitHub..."
+        printf "%sRunning Brew Uninstaller from GitHub...%s\n" "${YELLOW}" "${RC}"
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/brew_uninstaller.sh)"
     fi
 }
@@ -43,35 +52,36 @@ run_uninstaller() {
 # Function to manage brew operations
 manage_brew() {
     while true; do
-        echo "Please select from the following options:"
-        echo "1) Run Brew Updater"
-        echo "2) Run Brew Installer"
-        echo "3) Run Brew Uninstaller"
-        echo "0) Return to main menu"
-        read -p "Enter your choice (0-3): " choice
+        printf "%sPlease select from the following options:%s\n" "${CYAN}" "${RC}"
+        printf "%s1)%s Run Brew Updater\n" "${GREEN}" "${RC}"
+        printf "%s2)%s Run Brew Installer\n" "${GREEN}" "${RC}"
+        printf "%s3)%s Run Brew Uninstaller\n" "${GREEN}" "${RC}"
+        printf "%s0)%s Return to main menu\n" "${RED}" "${RC}"
+        printf "Enter your choice (0-3): "
+        read choice
 
         case $choice in
             1)
-                echo "Running Brew Updater..."
+                printf "%sRunning Brew Updater...%s\n" "${CYAN}" "${RC}"
                 run_updater
                 ;;
             2)
-                echo "Running Brew Installer..."
+                printf "%sRunning Brew Installer...%s\n" "${CYAN}" "${RC}"
                 run_installer
                 ;;
             3)
-                echo "Running Brew Uninstaller..."
+                printf "%sRunning Brew Uninstaller...%s\n" "${CYAN}" "${RC}"
                 run_uninstaller
                 ;;
             0)
-                echo "Returning to main menu."
+                printf "%sReturning to main menu.%s\n" "${YELLOW}" "${RC}"
                 break
                 ;;
             *)
-                echo "Invalid option. Please enter a number between 0 and 3."
+                printf "%sInvalid option. Please enter a number between 0 and 3.%s\n" "${RED}" "${RC}"
                 ;;
         esac
-        echo # Empty line for better readability
+        printf "\n"
     done
 }
 
