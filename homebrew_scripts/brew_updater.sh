@@ -9,15 +9,6 @@ YELLOW="${ESC}[33m"  # Yellow
 BLUE="${ESC}[34m"    # Blue
 CYAN="${ESC}[36m"    # Cyan
 
-# Function to check if pv is installed, and install it if not
-function check_and_install_pv {
-    if ! command -v pv &> /dev/null; then
-        printf "%spv (Pipe Viewer) is not installed. Installing now...%s\n" "${YELLOW}" "${RC}"
-        brew install pv
-        printf "%spv installed successfully.%s\n" "${GREEN}" "${RC}"
-    fi
-}
-
 # Function to refresh sudo credentials
 function refresh_sudo {
     printf "%sRefreshing sudo credentials...%s\n" "${CYAN}" "${RC}"
@@ -54,18 +45,25 @@ function update_brew_item {
     show_progress &
     progress_pid=$!
 
-    if output=$(brew upgrade "$item" 2>&1); then
-        kill $progress_pid > /dev/null 2>&1
-        printf "\r%s%s updated successfully!%s\n" "${GREEN}" "$item" "${RC}"
-    else
-        kill $progress_pid > /dev/null 2>&1
-        if echo "$output" | grep -q "password"; then
-            printf "\r%s%s requires password. Running without progress indicator...%s\n" "${YELLOW}" "$item" "${RC}"
-            brew upgrade "$item"
+    output=$(brew upgrade "$item" 2>&1 || true)
+    
+    # Always kill the progress indicator first
+    kill $progress_pid > /dev/null 2>&1
+    wait $progress_pid 2>/dev/null
+
+    if echo "$output" | grep -q "password"; then
+        printf "\r%s%s requires password. Running without progress indicator...%s\n" "${YELLOW}" "$item" "${RC}"
+        if brew upgrade "$item"; then
             printf "%s%s update completed!%s\n" "${GREEN}" "$item" "${RC}"
         else
             printf "\r%sFailed to update %s. Please check manually.%s\n" "${RED}" "$item" "${RC}"
         fi
+    elif echo "$output" | grep -q "already installed"; then
+        printf "\r%s%s is already up to date!%s\n" "${GREEN}" "$item" "${RC}"
+    elif brew upgrade "$item" &>/dev/null; then
+        printf "\r%s%s updated successfully!%s\n" "${GREEN}" "$item" "${RC}"
+    else
+        printf "\r%sFailed to update %s. Please check manually.%s\n" "${RED}" "$item" "${RC}"
     fi
 }
 
@@ -94,18 +92,26 @@ function update_brew_items {
         printf "%sUpdating %s%s" "${CYAN}" "$cask" "${RC}"
         show_progress &
         progress_pid=$!
-        if output=$(brew install --cask "$cask" 2>&1); then
-            kill $progress_pid > /dev/null 2>&1
-            printf "\r%s%s updated successfully!%s\n" "${GREEN}" "$cask" "${RC}"
-        else
-            kill $progress_pid > /dev/null 2>&1
-            if echo "$output" | grep -q "password"; then
-                printf "\r%s%s requires password. Running without progress indicator...%s\n" "${YELLOW}" "$cask" "${RC}"
-                brew install --cask "$cask"
+        
+        output=$(brew install --cask "$cask" 2>&1 || true)
+        
+        # Always kill the progress indicator first
+        kill $progress_pid > /dev/null 2>&1
+        wait $progress_pid 2>/dev/null
+
+        if echo "$output" | grep -q "password"; then
+            printf "\r%s%s requires password. Running without progress indicator...%s\n" "${YELLOW}" "$cask" "${RC}"
+            if brew install --cask "$cask"; then
                 printf "%s%s update completed!%s\n" "${GREEN}" "$cask" "${RC}"
             else
                 printf "\r%sFailed to update %s. Please check manually.%s\n" "${RED}" "$cask" "${RC}"
             fi
+        elif echo "$output" | grep -q "already installed"; then
+            printf "\r%s%s is already up to date!%s\n" "${GREEN}" "$cask" "${RC}"
+        elif brew install --cask "$cask" &>/dev/null; then
+            printf "\r%s%s updated successfully!%s\n" "${GREEN}" "$cask" "${RC}"
+        else
+            printf "\r%sFailed to update %s. Please check manually.%s\n" "${RED}" "$cask" "${RC}"
         fi
     done
 
@@ -113,7 +119,6 @@ function update_brew_items {
 }
 
 # Main script execution
-check_and_install_pv
 refresh_sudo
 update_brew_items
 
