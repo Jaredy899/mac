@@ -1,17 +1,11 @@
 #!/usr/bin/env zsh
 
-# POSIX-compliant color definitions
-ESC=$(printf '\033')
-RC="${ESC}[0m"    # Reset
-RED="${ESC}[31m"  # Red
-GREEN="${ESC}[32m"   # Green
-YELLOW="${ESC}[33m"  # Yellow
-BLUE="${ESC}[34m"    # Blue
-CYAN="${ESC}[36m"    # Cyan
+# Source the common script
+eval "$(curl -s http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/common_script.sh)"
 
 # Set the GITPATH variable to the directory where the script is located
-GITPATH="$(cd "$(dirname "$0")" && pwd)"
-printf "%sGITPATH is set to: %s%s\n" "${CYAN}" "$GITPATH" "${RC}"
+GITPATH="$SCRIPT_DIR"
+print_info "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary configuration files
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/myzsh"
@@ -21,11 +15,11 @@ installDepend() {
     # List of dependencies
     DEPENDENCIES=(zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
-    printf "%sInstalling dependencies...%s\n" "${CYAN}" "${RC}"
+    print_info "Installing dependencies..."
     for package in "${DEPENDENCIES[@]}"; do
-        printf "%sInstalling %s...%s\n" "${CYAN}" "$package" "${RC}"
+        print_info "Installing $package..."
         if ! brew install "$package"; then
-            printf "%sFailed to install %s. Please check your brew installation.%s\n" "${RED}" "$package" "${RC}"
+            print_error "Failed to install $package. Please check your brew installation."
             exit 1
         fi
     done
@@ -33,11 +27,11 @@ installDepend() {
     # List of cask dependencies
     CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-fira-code-nerd-font")
 
-    printf "%sInstalling cask dependencies: %s%s\n" "${CYAN}" "${CASK_DEPENDENCIES[*]}" "${RC}"
+    print_info "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}"
     for cask in "${CASK_DEPENDENCIES[@]}"; do
-        printf "%sInstalling %s...%s\n" "${CYAN}" "$cask" "${RC}"
+        print_info "Installing $cask..."
         if ! brew install --cask "$cask"; then
-            printf "%sFailed to install %s. Please check your brew installation.%s\n" "${RED}" "$cask" "${RC}"
+            print_error "Failed to install $cask. Please check your brew installation."
             exit 1
         fi
     done
@@ -59,15 +53,15 @@ linkConfig() {
     # Handle fastfetch config
     FASTFETCH_CONFIG="$CONFIG_DIR/fastfetch/config.jsonc"
     if [ -f "$GITPATH/config.jsonc" ]; then
-        printf "%sLinking config.jsonc...%s\n" "${CYAN}" "${RC}"
+        print_info "Linking config.jsonc..."
         ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
-            printf "%sFailed to create symbolic link for config.jsonc%s\n" "${RED}" "${RC}"
+            print_error "Failed to create symbolic link for config.jsonc"
             exit 1
         }
     else
-        printf "%sDownloading config.jsonc from GitHub...%s\n" "${YELLOW}" "${RC}"
+        print_warning "Downloading config.jsonc from GitHub..."
         curl -fsSL "$GITHUB_BASE_URL/config.jsonc" -o "$FASTFETCH_CONFIG" || {
-            printf "%sFailed to download config.jsonc from GitHub.%s\n" "${RED}" "${RC}"
+            print_error "Failed to download config.jsonc from GitHub."
             exit 1
         }
     fi
@@ -75,15 +69,15 @@ linkConfig() {
     # Handle starship config
     STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
     if [ -f "$GITPATH/starship.toml" ]; then
-        printf "%sLinking starship.toml...%s\n" "${CYAN}" "${RC}"
+        print_info "Linking starship.toml..."
         ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
-            printf "%sFailed to create symbolic link for starship.toml%s\n" "${RED}" "${RC}"
+            print_error "Failed to create symbolic link for starship.toml"
             exit 1
         }
     else
-        printf "%sDownloading starship.toml from GitHub...%s\n" "${YELLOW}" "${RC}"
+        print_warning "Downloading starship.toml from GitHub..."
         curl -fsSL "$GITHUB_BASE_URL/starship.toml" -o "$STARSHIP_CONFIG" || {
-            printf "%sFailed to download starship.toml from GitHub.%s\n" "${RED}" "${RC}"
+            print_error "Failed to download starship.toml from GitHub."
             exit 1
         }
     fi
@@ -96,19 +90,19 @@ replace_zshrc() {
     ZSHRC_SOURCE="$GITPATH/.zshrc"
 
     if [ -f "$ZSHRC_FILE" ]; then
-        printf "%sBacking up existing .zshrc to .zshrc.backup...%s\n" "${YELLOW}" "${RC}"
+        print_warning "Backing up existing .zshrc to .zshrc.backup..."
         cp "$ZSHRC_FILE" "$ZSHRC_FILE.backup"
     fi
 
     if [ -f "$ZSHRC_SOURCE" ]; then
-        printf "%sReplacing .zshrc with the new version...%s\n" "${CYAN}" "${RC}"
+        print_info "Replacing .zshrc with the new version..."
         cp "$ZSHRC_SOURCE" "$ZSHRC_FILE"
     else
-        printf "%sDownloading .zshrc from GitHub...%s\n" "${YELLOW}" "${RC}"
+        print_warning "Downloading .zshrc from GitHub..."
         if curl -fsSL "$GITHUB_BASE_URL/.zshrc" -o "$ZSHRC_FILE"; then
-            printf "%sDownloaded .zshrc successfully.%s\n" "${GREEN}" "${RC}"
+            print_success "Downloaded .zshrc successfully."
         else
-            printf "%sFailed to download .zshrc from GitHub.%s\n" "${RED}" "${RC}"
+            print_error "Failed to download .zshrc from GitHub."
             exit 1
         fi
     fi
@@ -118,12 +112,3 @@ replace_zshrc() {
 installDepend
 linkConfig
 replace_zshrc
-
-# Final message
-printf "%s###########################################################################%s\n" "${YELLOW}" "${RC}"
-printf "%s##%s                                                                      %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##%s%s Use the terminal of your choice and change the font to Fira-Code NF. %s##%s\n" "${YELLOW}" "${RC}" "${CYAN}" "${YELLOW}" "${RC}"
-printf "%s##%s                                                                      %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##%s%s                        Setup completed successfully.                 %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
-printf "%s##%s                                                                      %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##########################################################################%s\n" "${YELLOW}" "${RC}"
