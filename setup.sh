@@ -1,20 +1,15 @@
-#!/bin/bash
+#!/bin/sh
 
-# POSIX-compliant color definitions using printf
-# Store the escape sequence in a more portable way
-ESC=$(printf '\033')
-RC="${ESC}[0m"
-RED="${ESC}[31m"
-YELLOW="${ESC}[33m"
-CYAN="${ESC}[36m"
-GREEN="${ESC}[32m"
+# Source the common script
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+eval "$(curl -s http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/common_script.sh)"
 
 # Set the GITPATH variable to the directory where the script is located
-GITPATH="$(cd "$(dirname "$0")" && pwd)"
-echo "GITPATH is set to: $GITPATH"
+GITPATH="$SCRIPT_DIR"
+print_info "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary configuration files
-GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main"
+GITHUB_BASE_URL="http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/"
 
 # Function to install Homebrew
 install_homebrew() {
@@ -24,10 +19,10 @@ install_homebrew() {
 # Function to run the brew_manager.sh script from local or GitHub
 run_brew_manager() {
     if [[ -f "$GITPATH/homebrew_scripts/brew_manager.sh" ]]; then
-        echo "Running brew_manager.sh from local directory..."
+        print_info "Running brew_manager.sh from local directory..."
         bash "$GITPATH/homebrew_scripts/brew_manager.sh"
     else
-        echo "Running brew_manager.sh from GitHub..."
+        print_warning "Running brew_manager.sh from GitHub..."
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/homebrew_scripts/brew_manager.sh)"
     fi
 }
@@ -66,62 +61,75 @@ run_settings() {
     fi
 }
 
+# Function to run the add_ssh_key.sh script from local or GitHub
+run_ssh_key_setup() {
+    if [[ -f "$GITPATH/add_ssh_key.sh" ]]; then
+        print_info "Running add_ssh_key.sh from local directory..."
+        sh "$GITPATH/add_ssh_key.sh"
+    else
+        print_warning "Running add_ssh_key.sh from GitHub..."
+        sh -c "$(curl -fsSL $GITHUB_BASE_URL/add_ssh_key.sh)"
+    fi
+}
+
 # Check if Homebrew is installed and install it if not
 if ! command -v brew &> /dev/null; then
-    echo "Homebrew is required but not installed. Installing Homebrew..."
+    print_warning "Homebrew is required but not installed. Installing Homebrew..."
     install_homebrew
 
     # Add Homebrew to PATH and source it immediately
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 else
-    echo "Homebrew is already installed."
+    print_success "Homebrew is already installed."
 
     # Ensure Homebrew is in PATH for the current session
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# Menu to choose which scripts to run
+# Function to show menu items
+show_setup_menu() {
+    show_menu_item 1 "$selected" "Run Homebrew Manager to manage Homebrew apps and casks"
+    show_menu_item 2 "$selected" "Run Dock Manager to manage Dock items"
+    show_menu_item 3 "$selected" "Run myzsh to enhance your terminal appearance"
+    show_menu_item 4 "$selected" "Run Settings Manager to configure system settings"
+    show_menu_item 5 "$selected" "Setup SSH Keys"
+    show_menu_item 6 "$selected" "Exit"
+}
+
+# Keep running until user chooses to exit
 while true; do
-    printf "%sPlease select from the following options:%s\n" "${CYAN}" "${RC}"
-    printf "%s1)%s Run Homebrew Manager to manage Homebrew apps and casks\n" "${GREEN}" "${RC}"
-    printf "%s2)%s Run Dock Manager to manage Dock items\n" "${GREEN}" "${RC}"
-    printf "%s3)%s Run myzsh to enhance your terminal appearance\n" "${GREEN}" "${RC}"
-    printf "%s4)%s Run Settings Manager to configure system settings\n" "${GREEN}" "${RC}"
-    printf "%s0)%s Exit\n" "${RED}" "${RC}"
-    printf "Enter your choice (1-4): "
-    read choice
+    # Handle menu selection
+    handle_menu_selection 6 "Setup Menu" show_setup_menu
+    choice=$?
 
     case $choice in
         1)
-            echo "Running Homebrew Manager..."
+            print_info "Running Homebrew Manager..."
             run_brew_manager
             ;;
         2)
-            echo "Running Dock Manager..."
+            print_info "Running Dock Manager..."
             run_dock_manager
             ;;
         3)
-            echo "Enhancing terminal appearance with myzsh..."
+            print_info "Enhancing terminal appearance with myzsh..."
             run_myzsh
             ;;
         4)
-            echo "Running Settings Manager..."
+            print_info "Running Settings Manager..."
             run_settings
             ;;
-        0)
-            echo "Exiting setup script."
-            break
+        5)
+            print_info "Setting up SSH Keys..."
+            run_ssh_key_setup
             ;;
-        *)
-            echo "Invalid option. Please enter a number between 1 and 4."
+        6)
+            print_info "Exiting setup script."
+            break
             ;;
     esac
 done
 
 # Update the completion message
-printf "%s#############################%s\n" "${YELLOW}" "${RC}"
-printf "%s##%s                         %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##%s%s Setup script completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
-printf "%s##%s                         %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s#############################%s\n" "${YELLOW}" "${RC}"
+print_colored "$GREEN" "Setup completed"
