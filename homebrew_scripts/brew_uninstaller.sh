@@ -1,19 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
-# POSIX-compliant color definitions
-ESC=$(printf '\033')
-RC="${ESC}[0m"    # Reset
-RED="${ESC}[31m"  # Red
-GREEN="${ESC}[32m"   # Green
-YELLOW="${ESC}[33m"  # Yellow
-BLUE="${ESC}[34m"    # Blue
-CYAN="${ESC}[36m"    # Cyan
+# Source the common script
+eval "$(curl -s http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/common_script.sh)"
 
 # Function to uninstall selected casks
 function uninstall_casks {
     local selected_casks=("$@")
     for cask in "${selected_casks[@]}"; do                      
-        printf "%sUninstalling %s...%s\n" "${CYAN}" "$cask" "${RC}"
+        print_info "Uninstalling $cask..."
         brew uninstall --cask "$cask"
     done
 }
@@ -29,24 +23,31 @@ function print_columns {
         for (( j=0; j<$num_columns; j++ )); do
             index=$(( i + j * rows ))
             if [ $index -lt $num_apps ]; then
-                printf "%s%-3d)%s %-22s" "${GREEN}" "$((index + 1))" "${RC}" "${app_list[$index]}"
+                # Format the number with padding
+                num=$((index+1))
+                if [ $num -lt 10 ]; then
+                    num_pad=" $num"
+                else
+                    num_pad="$num"
+                fi
+                printf "  %s) %-25s" "$num_pad" "${app_list[$index]}"
             fi
         done
-        printf "\n"
+        echo
     done
 }
 
 # Function to list installed casks and prompt for uninstallation
 function list_and_uninstall {
-    printf "%sChecking installed Homebrew casks...%s\n" "${CYAN}" "${RC}"
+    print_info "Checking installed Homebrew casks..."
     installed_casks=$(brew list --cask)
 
     if [ -z "$installed_casks" ]; then
-        printf "%sNo casks are currently installed.%s\n" "${YELLOW}" "${RC}"
+        print_warning "No casks are currently installed."
         return
     fi
 
-    printf "%sInstalled casks:%s\n" "${CYAN}" "${RC}"
+    print_info "Installed casks:"
     cask_list=()
     for cask in $installed_casks; do
         cask_list+=("$cask")
@@ -54,7 +55,7 @@ function list_and_uninstall {
 
     print_columns "${cask_list[@]}"
 
-    printf "Enter the numbers of the casks you want to uninstall (separated by space), or press Enter to skip: "
+    print_info "Enter the numbers of the casks you want to uninstall (separated by space), or press Enter to skip: "
     read -a selected
     if [ ${#selected[@]} -gt 0 ]; then
         selected_casks=()
@@ -63,16 +64,11 @@ function list_and_uninstall {
         done
         uninstall_casks "${selected_casks[@]}"
     else
-        printf "%sNo casks selected for uninstallation.%s\n" "${YELLOW}" "${RC}"
+        print_warning "No casks selected for uninstallation."
     fi
 }
 
 # Main script
 list_and_uninstall
 
-# Completion message
-printf "%s############################%s\n" "${YELLOW}" "${RC}"
-printf "%s##%s                        %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##%s%s Uninstaller completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
-printf "%s##%s                        %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s############################%s\n" "${YELLOW}" "${RC}"
+print_colored "$GREEN" "Uninstaller completed"
