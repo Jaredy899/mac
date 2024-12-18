@@ -1,30 +1,24 @@
-#!/bin/bash
+#!/bin/sh
 
-# POSIX-compliant color definitions
-ESC=$(printf '\033')
-RC="${ESC}[0m"    # Reset
-RED="${ESC}[31m"  # Red
-GREEN="${ESC}[32m"   # Green
-YELLOW="${ESC}[33m"  # Yellow
-BLUE="${ESC}[34m"    # Blue
-CYAN="${ESC}[36m"    # Cyan
+# Source the common script
+eval "$(curl -s http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/common_script.sh)"
 
 # Function to install dockutil if not installed
 install_dockutil() {
     if ! command -v dockutil &> /dev/null; then
-        printf "%sdockutil is not installed. Installing dockutil...%s\n" "${YELLOW}" "${RC}"
+        print_warning "dockutil is not installed. Installing dockutil..."
         brew install dockutil
     else
-        printf "%sdockutil is already installed.%s\n" "${GREEN}" "${RC}"
+        print_success "dockutil is already installed."
     fi
 }
 
 # Ensure Homebrew is installed
 if ! command -v brew &> /dev/null; then
-    printf "%sHomebrew is required but not installed. Installing Homebrew...%s\n" "${YELLOW}" "${RC}"
+    print_warning "Homebrew is required but not installed. Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
-    printf "%sHomebrew is already installed.%s\n" "${GREEN}" "${RC}"
+    print_success "Homebrew is already installed."
 fi
 
 # Install dockutil if necessary
@@ -47,7 +41,7 @@ applications_dir="/Applications"
 non_standard_apps=()
 
 # Find non-standard applications
-printf "%sScanning for installed applications...%s\n" "${CYAN}" "${RC}"
+print_info "Scanning for installed applications..."
 while IFS= read -r app; do
     app_name=$(basename "$app" .app)
     if [[ ! " ${standard_apps[@]} " =~ " ${app_name} " ]]; then
@@ -61,7 +55,7 @@ unset IFS
 
 # Display available applications in columns
 if [ ${#sorted_apps[@]} -gt 0 ]; then
-    printf "%sAvailable applications:%s\n" "${CYAN}" "${RC}"
+    print_info "Available applications:"
     
     # Calculate number of rows needed for 3 columns
     total_apps=${#sorted_apps[@]}
@@ -72,14 +66,20 @@ if [ ${#sorted_apps[@]} -gt 0 ]; then
         for (( j=0; j<3; j++ )); do
             index=$((i + j*rows))
             if [ $index -lt $total_apps ]; then
-                printf "%s%-3d)%s %-25s" "${GREEN}" "$((index+1))" "${RC}" "${sorted_apps[$index]}"
+                # Format the number with padding
+                num=$((index+1))
+                if [ $num -lt 10 ]; then
+                    num_pad=" $num"
+                else
+                    num_pad="$num"
+                fi
+                printf "  %s) %-25s" "$num_pad" "${sorted_apps[$index]}"
             fi
         done
-        printf "\n"
+        echo
     done
 
-    # Get user selection
-    printf "\n%sEnter the numbers of the applications you want to add to the Dock (separated by space):%s " "${CYAN}" "${RC}"
+    print_info "Enter the numbers of the applications you want to add to the Dock (separated by space): "
     read -r selected_numbers
 
     # Process selections
@@ -88,11 +88,11 @@ if [ ${#sorted_apps[@]} -gt 0 ]; then
         if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le ${#sorted_apps[@]} ]; then
             apps_to_add+=("${sorted_apps[$((num-1))]}")
         else
-            printf "%sInvalid selection: %s. Skipping...%s\n" "${RED}" "$num" "${RC}"
+            print_error "Invalid selection: $num. Skipping..."
         fi
     done
 else
-    printf "%sNo non-standard applications found in %s%s\n" "${YELLOW}" "$applications_dir" "${RC}"
+    print_warning "No non-standard applications found in $applications_dir"
 fi
 
 # Flag to check if any changes were made
@@ -100,33 +100,27 @@ changes_made=false
 
 # Add selected apps to the Dock
 if [ ${#apps_to_add[@]} -gt 0 ]; then
-    printf "%sAdding selected apps to the Dock...%s\n" "${CYAN}" "${RC}"
+    print_info "Adding selected apps to the Dock..."
     for app in "${apps_to_add[@]}"; do
         app_path="$applications_dir/$app.app"
         if [ -d "$app_path" ]; then
             dockutil --add "$app_path" --allhomes
             if [ $? -eq 0 ]; then
-                printf "%s%s successfully added to the Dock.%s\n" "${GREEN}" "$app" "${RC}"
+                print_success "$app successfully added to the Dock."
                 changes_made=true
             else
-                printf "%sFailed to add %s to the Dock. Please check for errors.%s\n" "${RED}" "$app" "${RC}"
+                print_error "Failed to add $app to the Dock. Please check for errors."
             fi
         else
-            printf "%sApplication %s not found at %s. Skipping...%s\n" "${YELLOW}" "$app" "$app_path" "${RC}"
+            print_warning "Application $app not found at $app_path. Skipping..."
         fi
     done
 fi
 
 # Reset the Dock only if changes were made
 if [ "$changes_made" = true ]; then
-    printf "%sResetting the Dock to apply changes...%s\n" "${CYAN}" "${RC}"
+    print_info "Resetting the Dock to apply changes..."
     killall Dock
 else
-    printf "%sNo changes made to the Dock. Reset not needed.%s\n" "${YELLOW}" "${RC}"
+    print_warning "No changes made to the Dock. Reset not needed."
 fi
-
-printf "%s###################################%s\n" "${YELLOW}" "${RC}"
-printf "%s##%s                               %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##%s%s Dock configuration completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
-printf "%s##%s                               %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s###################################%s\n" "${YELLOW}" "${RC}"
