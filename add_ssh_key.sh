@@ -1,52 +1,94 @@
-#!/bin/bash
+#!/bin/sh
 
-# POSIX-compliant color definitions
-ESC=$(printf '\033')
-RC="${ESC}[0m"    # Reset
-RED="${ESC}[31m"  # Red
-GREEN="${ESC}[32m"   # Green
-YELLOW="${ESC}[33m"  # Yellow
-BLUE="${ESC}[34m"    # Blue
-CYAN="${ESC}[36m"    # Cyan
-
-# Check if zsh is being used
-if [ -n "$ZSH_VERSION" ]; then
-  printf "%sDetected zsh. Using zsh for script execution.%s\n" "${CYAN}" "${RC}"
-  exec zsh "$0" "$@"
-  exit
-fi
+# Source the common script
+eval "$(curl -s http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/common_script.sh)"
 
 # Variables
 SSH_DIR="$HOME/.ssh"
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
 
-# Ensure the .ssh directory exists
-if [ ! -d "$SSH_DIR" ]; then
-  mkdir -p "$SSH_DIR"
-  chmod 700 "$SSH_DIR"
-  printf "%sCreated %s and set permissions to 700.%s\n" "${GREEN}" "$SSH_DIR" "${RC}"
-else
-  printf "%s%s already exists.%s\n" "${YELLOW}" "$SSH_DIR" "${RC}"
-fi
+# Function to ensure directory and file exist with correct permissions
+ensure_ssh_setup() {
+    if [ ! -d "$SSH_DIR" ]; then
+        mkdir -p "$SSH_DIR"
+        chmod 700 "$SSH_DIR"
+        print_success "Created $SSH_DIR and set permissions to 700."
+    else
+        print_warning "$SSH_DIR already exists."
+    fi
 
-# Ensure the authorized_keys file exists
-if [ ! -f "$AUTHORIZED_KEYS" ]; then
-  touch "$AUTHORIZED_KEYS"
-  chmod 600 "$AUTHORIZED_KEYS"
-  printf "%sCreated %s and set permissions to 600.%s\n" "${GREEN}" "$AUTHORIZED_KEYS" "${RC}"
-else
-  printf "%s%s already exists.%s\n" "${YELLOW}" "$AUTHORIZED_KEYS" "${RC}"
-fi
+    if [ ! -f "$AUTHORIZED_KEYS" ]; then
+        touch "$AUTHORIZED_KEYS"
+        chmod 600 "$AUTHORIZED_KEYS"
+        print_success "Created $AUTHORIZED_KEYS and set permissions to 600."
+    else
+        print_warning "$AUTHORIZED_KEYS already exists."
+    fi
+}
 
-# Add the public key to the authorized_keys file if not already added
-printf "%sEnter the public key to add: %s" "${CYAN}" "${RC}"
-read PUBLIC_KEY
+# Function to import SSH keys from GitHub
+import_ssh_keys() {
+    print_info "Enter the GitHub username: "
+    read -r github_user
 
-if grep -q "$PUBLIC_KEY" "$AUTHORIZED_KEYS"; then
-  printf "%sPublic key already exists in %s.%s\n" "${YELLOW}" "$AUTHORIZED_KEYS" "${RC}"
-else
-  echo "$PUBLIC_KEY" >> "$AUTHORIZED_KEYS"
-  printf "%sPublic key added to %s.%s\n" "${GREEN}" "$AUTHORIZED_KEYS" "${RC}"
-fi
+    ssh_keys_url="https://github.com/$github_user.keys"
+    keys=$(curl -s "$ssh_keys_url")
 
-printf "%sDone.%s\n" "${GREEN}" "${RC}"
+    if [ -z "$keys" ]; then
+        print_error "No SSH keys found for GitHub user: $github_user"
+    else
+        print_success "SSH keys found for $github_user:"
+        printf "%s\n" "$keys"
+        print_info "Do you want to import these keys? [Y/n]: "
+        read -r confirm
+
+        case "$confirm" in
+            [Nn]*)
+                print_warning "SSH key import cancelled."
+                ;;
+            *)
+                printf "%s\n" "$keys" >> "$AUTHORIZED_KEYS"
+                chmod 600 "$AUTHORIZED_KEYS"
+                print_success "SSH keys imported successfully!"
+                ;;
+        esac
+    fi
+}
+
+# Function to add a manually entered public key
+add_manual_key() {
+    print_info "Enter the public key to add: "
+    read -r PUBLIC_KEY
+
+    if grep -q "$PUBLIC_KEY" "$AUTHORIZED_KEYS"; then
+        print_warning "Public key already exists in $AUTHORIZED_KEYS."
+    else
+        printf "%s\n" "$PUBLIC_KEY" >> "$AUTHORIZED_KEYS"
+        chmod 600 "$AUTHORIZED_KEYS"
+        print_success "Public key added to $AUTHORIZED_KEYS."
+    fi
+}
+
+# Function to show SSH key menu
+show_ssh_menu() {
+    show_menu_item 1 "$selected" "Import from GitHub"
+    show_menu_item 2 "$selected" "Enter your own public key"
+}
+
+# Main script
+ensure_ssh_setup
+
+# Handle menu selection
+handle_menu_selection 2 "Select SSH key option" show_ssh_menu
+choice=$?
+
+case $choice in
+    1)
+        import_ssh_keys
+        ;;
+    2)
+        add_manual_key
+        ;;
+esac
+
+print_colored "$GREEN" "SSH key setup completed"
