@@ -8,7 +8,7 @@ GITPATH="$SCRIPT_DIR"
 print_info "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary Homebrew scripts
-GITHUB_BASE_URL="http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/homebrew_scripts"
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/homebrew_scripts"
 
 # Function to run the updater script
 run_updater() {
