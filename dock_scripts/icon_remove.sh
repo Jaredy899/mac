@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Source the common script
-eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/dev/common_script.sh)"
+eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
 
 # Function to install dockutil if not installed
 install_dockutil() {
