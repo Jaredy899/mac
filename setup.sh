@@ -2,14 +2,14 @@
 
 # Source the common script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/dev/common_script.sh)"
+eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
 
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$SCRIPT_DIR"
 print_info "GITPATH is set to: $GITPATH"
 
 # GitHub URL base for the necessary configuration files
-GITHUB_BASE_URL="http://10.24.24.6:3030/Jaredy89/mac/raw/branch/main/"
+GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/"
 
 # Function to install Homebrew
 install_homebrew() {
