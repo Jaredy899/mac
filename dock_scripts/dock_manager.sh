@@ -1,24 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
-# POSIX-compliant color definitions
-ESC=$(printf '\033')
-RC="${ESC}[0m"    # Reset
-RED="${ESC}[31m"  # Red
-GREEN="${ESC}[32m"   # Green
-YELLOW="${ESC}[33m"  # Yellow
-BLUE="${ESC}[34m"    # Blue
-CYAN="${ESC}[36m"    # Cyan
+# Source the common script
+eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/dev/common_script.sh)"
 
 # Check if a path argument is provided
 if [ -n "$1" ]; then
     GITPATH="$1"
 else
-    GITPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    GITPATH="$SCRIPT_DIR"
 fi
 
-printf "%sGITPATH is set to: %s%s\n" "${CYAN}" "$GITPATH" "${RC}"
-printf "%sCurrent working directory: %s%s\n" "${CYAN}" "$(pwd)" "${RC}"
-printf "%sScript location: %s%s\n" "${CYAN}" "${BASH_SOURCE[0]}" "${RC}"
+print_info "GITPATH is set to: $GITPATH"
+print_info "Current working directory: $(pwd)"
+print_info "Script location: ${BASH_SOURCE[0]}"
 
 # GitHub URL base for the necessary Dock scripts
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/dock_scripts/"
@@ -26,12 +20,12 @@ GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main
 # Function to remove Dock items using icon_remove.sh
 remove_dock_items() {
     local script_path="$GITPATH/icon_remove.sh"
-    printf "%sChecking for icon_remove.sh at: %s%s\n" "${CYAN}" "$script_path" "${RC}"
+    print_info "Checking for icon_remove.sh at: $script_path"
     if [[ -f "$script_path" ]]; then
-        printf "%sRunning icon_remove.sh from local directory...%s\n" "${GREEN}" "${RC}"
+        print_success "Running icon_remove.sh from local directory..."
         bash "$script_path"
     else
-        printf "%sLocal icon_remove.sh not found. Running from GitHub...%s\n" "${YELLOW}" "${RC}"
+        print_warning "Local icon_remove.sh not found. Running from GitHub..."
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_remove.sh)"
     fi
 }
@@ -39,52 +33,43 @@ remove_dock_items() {
 # Function to add Dock items using icon_add.sh
 add_dock_items() {
     local script_path="$GITPATH/icon_add.sh"
-    printf "%sChecking for icon_add.sh at: %s%s\n" "${CYAN}" "$script_path" "${RC}"
+    print_info "Checking for icon_add.sh at: $script_path"
     if [[ -f "$script_path" ]]; then
-        printf "%sRunning icon_add.sh from local directory...%s\n" "${GREEN}" "${RC}"
+        print_success "Running icon_add.sh from local directory..."
         bash "$script_path"
     else
-        printf "%sLocal icon_add.sh not found. Running from GitHub...%s\n" "${YELLOW}" "${RC}"
+        print_warning "Local icon_add.sh not found. Running from GitHub..."
         bash -c "$(curl -fsSL $GITHUB_BASE_URL/icon_add.sh)"
     fi
 }
 
-# Function to manage dock items
-manage_dock() {
-    while true; do
-        printf "%sPlease select from the following options:%s\n" "${CYAN}" "${RC}"
-        printf "%s1)%s Add Dock icons\n" "${GREEN}" "${RC}"
-        printf "%s2)%s Remove Dock icons\n" "${GREEN}" "${RC}"
-        printf "%s0)%s Return to main menu\n" "${RED}" "${RC}"
-        printf "Enter your choice (0-2): "
-        read choice
-
-        case $choice in
-            1)
-                printf "%sAdding Dock items...%s\n" "${CYAN}" "${RC}"
-                add_dock_items
-                ;;
-            2)
-                printf "%sRemoving Dock items...%s\n" "${CYAN}" "${RC}"
-                remove_dock_items
-                ;;
-            0)
-                printf "%sReturning to main menu.%s\n" "${YELLOW}" "${RC}"
-                break
-                ;;
-            *)
-                printf "%sInvalid option. Please enter a number between 0 and 2.%s\n" "${RED}" "${RC}"
-                ;;
-        esac
-        printf "\n"
-    done
+# Function to show dock menu items
+show_dock_menu() {
+    show_menu_item 1 "$selected" "Add Dock icons"
+    show_menu_item 2 "$selected" "Remove Dock icons"
+    show_menu_item 3 "$selected" "Return to main menu"
 }
 
-# Run the dock manager
-manage_dock
+# Keep running until user chooses to exit
+while true; do
+    # Handle menu selection
+    handle_menu_selection 3 "Dock Manager" show_dock_menu
+    choice=$?
 
-printf "%s################################%s\n" "${YELLOW}" "${RC}"
-printf "%s##%s                            %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s##%s%s Dock management completed. %s##%s\n" "${YELLOW}" "${RC}" "${GREEN}" "${YELLOW}" "${RC}"
-printf "%s##%s                            %s##%s\n" "${YELLOW}" "${RC}" "${YELLOW}" "${RC}"
-printf "%s################################%s\n" "${YELLOW}" "${RC}"
+    case $choice in
+        1)
+            print_info "Adding Dock items..."
+            add_dock_items
+            print_colored "$GREEN" "Dock completed"
+            ;;
+        2)
+            print_info "Removing Dock items..."
+            remove_dock_items
+            print_colored "$GREEN" "Dock completed"
+            ;;
+        3)
+            print_info "Returning to main menu."
+            break
+            ;;
+    esac
+done
