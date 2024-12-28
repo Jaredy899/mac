@@ -74,9 +74,11 @@ configure_dock() {
     print_info "Configuring dock settings..."
     
     defaults write com.apple.dock autohide -bool true
+    # Disable dock animation
+    defaults write com.apple.dock autohide-time-modifier -float 0
     killall Dock
     
-    print_success "Dock settings updated"
+    print_success "Dock settings updated (auto-hide enabled, animations disabled)"
 }
 
 # Function to enable SSH access
