@@ -25,7 +25,7 @@ installDepend() {
     done
 
     # List of cask dependencies
-    CASK_DEPENDENCIES=("alacritty" "kitty" "tabby" "font-fira-code-nerd-font")
+    CASK_DEPENDENCIES=("kitty" "ghostty" "font-fira-code-nerd-font")
 
     print_info "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}"
     for cask in "${CASK_DEPENDENCIES[@]}"; do
