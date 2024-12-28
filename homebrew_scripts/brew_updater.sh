@@ -9,44 +9,15 @@ function refresh_sudo {
     sudo -v
 }
 
-# Function to show a simple progress spinner
-function show_spinner {
-    local pid=$1
-    local delay=0.1
-    local spinner=('|' '/' '-' '\')
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        for i in "${spinner[@]}"; do
-            printf "\r%sChecking for updates... %s%s" "${CYAN}" "$i" "${RC}"
-            sleep $delay
-        done
-    done
-    printf "\r"
-}
-
-# Function to show a simple progress bar using dots
-function show_progress {
-    while true; do
-        printf "."
-        sleep 0.5
-    done
-}
-
 # Function to update a specific Homebrew item if it's outdated
 function update_brew_item {
     local item=$1
     print_info "Updating $item"
 
-    show_progress &
-    progress_pid=$!
-
     output=$(brew upgrade "$item" 2>&1 || true)
     
-    # Always kill the progress indicator first
-    kill $progress_pid > /dev/null 2>&1
-    wait $progress_pid 2>/dev/null
-
     if echo "$output" | grep -q "password"; then
-        print_warning "$item requires password. Running without progress indicator..."
+        print_warning "$item requires password..."
         if brew upgrade "$item"; then
             print_success "$item update completed!"
         else
@@ -68,10 +39,7 @@ function update_brew_items {
 
     print_info "Checking for updates to Homebrew apps and casks..."
 
-    (brew outdated --formula > /tmp/brew_outdated_formula.txt) &
-    spinner_pid=$!
-    show_spinner $spinner_pid
-
+    brew outdated --formula > /tmp/brew_outdated_formula.txt
     outdated_formulae=$(cat /tmp/brew_outdated_formula.txt)
 
     if [ -n "$outdated_formulae" ]; then
