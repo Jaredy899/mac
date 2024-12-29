@@ -53,9 +53,9 @@ linkConfig() {
     # Handle fastfetch config
     FASTFETCH_CONFIG="$CONFIG_DIR/fastfetch/config.jsonc"
     if [ -f "$GITPATH/config.jsonc" ]; then
-        print_info "Linking config.jsonc..."
-        ln -svf "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
-            print_error "Failed to create symbolic link for config.jsonc"
+        print_info "Copying config.jsonc..."
+        cp "$GITPATH/config.jsonc" "$FASTFETCH_CONFIG" || {
+            print_error "Failed to copy config.jsonc"
             exit 1
         }
     else
@@ -69,9 +69,9 @@ linkConfig() {
     # Handle starship config
     STARSHIP_CONFIG="$CONFIG_DIR/starship.toml"
     if [ -f "$GITPATH/starship.toml" ]; then
-        print_info "Linking starship.toml..."
-        ln -svf "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
-            print_error "Failed to create symbolic link for starship.toml"
+        print_info "Copying starship.toml..."
+        cp "$GITPATH/starship.toml" "$STARSHIP_CONFIG" || {
+            print_error "Failed to copy starship.toml"
             exit 1
         }
     else
