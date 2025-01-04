@@ -6,6 +6,7 @@ eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/
 # Variables
 SSH_DIR="$HOME/.ssh"
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
+SSHD_CONFIG="/etc/ssh/sshd_config"
 
 # Function to ensure directory and file exist with correct permissions
 ensure_ssh_setup() {
@@ -23,6 +24,42 @@ ensure_ssh_setup() {
         print_success "Created $AUTHORIZED_KEYS and set permissions to 600."
     else
         print_warning "$AUTHORIZED_KEYS already exists."
+    fi
+
+    # Configure sshd with elevated privileges if needed
+    if [ "$(id -u)" -ne 0 ]; then
+        print_info "Requesting sudo privileges to configure sshd..."
+        exec sudo "$0"
+        exit $?
+    fi
+
+    if [ -f "$SSHD_CONFIG" ]; then
+        # Ensure PubkeyAuthentication is enabled
+        if grep -q "^PubkeyAuthentication" "$SSHD_CONFIG"; then
+            sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' "$SSHD_CONFIG"
+        else
+            echo "PubkeyAuthentication yes" >> "$SSHD_CONFIG"
+        fi
+        
+        # Ensure AuthorizedKeysFile is set correctly
+        if grep -q "^AuthorizedKeysFile" "$SSHD_CONFIG"; then
+            sed -i 's/^AuthorizedKeysFile.*/AuthorizedKeysFile .ssh\/authorized_keys/' "$SSHD_CONFIG"
+        else
+            echo "AuthorizedKeysFile .ssh/authorized_keys" >> "$SSHD_CONFIG"
+        fi
+
+        print_success "SSH daemon configured to accept public key authentication."
+        
+        # Restart SSH daemon to apply changes
+        if command -v systemctl >/dev/null 2>&1; then
+            systemctl restart sshd
+        elif command -v service >/dev/null 2>&1; then
+            service sshd restart
+        else
+            print_warning "Could not restart SSH daemon automatically. Please restart it manually."
+        fi
+    else
+        print_error "SSH daemon config file not found at $SSHD_CONFIG"
     fi
 }
 
