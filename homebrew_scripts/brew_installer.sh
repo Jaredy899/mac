@@ -140,5 +140,3 @@ while true; do
 done
 
 print_colored "$GREEN" "Installer completed"
-
-asdf
