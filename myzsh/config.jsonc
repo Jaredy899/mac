@@ -83,6 +83,11 @@
             "key": "  󰩠"
         },
         {
+            "type": "command",
+            "key": "  󰩠",
+            "text": "tailscale_ip=$(tailscale ip -4); echo $tailscale_ip"
+        },
+        {
             "type": "weather",
             "timeout": 1000,
             "key": "  "
