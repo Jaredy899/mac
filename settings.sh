@@ -92,6 +92,52 @@ auth       sufficient     pam_tid.so\
     fi
 }
 
+# Function to configure Finder preferences
+configure_finder() {
+    print_info "Configuring Finder preferences..."
+    
+    # Show hidden files
+    defaults write com.apple.finder AppleShowAllFiles -bool true
+    # Show path bar
+    defaults write com.apple.finder ShowPathbar -bool true
+    # Show status bar
+    defaults write com.apple.finder ShowStatusBar -bool true
+    
+    killall Finder
+    print_success "Finder preferences updated"
+}
+
+# Function to set default screenshot location
+set_screenshot_location() {
+    print_info "Setting default screenshot location..."
+    
+    mkdir -p ~/Screenshots
+    defaults write com.apple.screencapture location ~/Screenshots
+    killall SystemUIServer
+    
+    print_success "Screenshot location set to ~/Screenshots"
+}
+
+# Function to configure energy saver settings
+# configure_energy_saver() {
+#     print_info "Configuring energy saver settings..."
+    
+#     sudo pmset -a displaysleep 10
+#     sudo pmset -a sleep 30
+    
+#     print_success "Energy saver settings updated"
+# }
+
+# Function to enable firewall
+# enable_firewall() {
+#     print_info "Enabling firewall..."
+    
+#     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+#     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+    
+#     print_success "Firewall enabled and stealth mode activated"
+# }
+
 # Main execution
 print_info "Starting macOS setup script..."
 
@@ -101,5 +147,9 @@ configure_trackpad
 configure_dock
 enable_ssh
 enable_touchid_sudo
+configure_finder
+set_screenshot_location
+#configure_energy_saver
+#enable_firewall
 
 print_colored "$GREEN" "Setup complete!"
