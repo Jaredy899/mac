@@ -16,26 +16,6 @@ check_sudo() {
     fi
 }
 
-# Function to setup Kitty keyboard shortcut
-setup_kitty_shortcut() {
-    print_info "Setting up Kitty keyboard shortcut..."
-    
-    # Create Scripts directory if it doesn't exist
-    mkdir -p ~/Library/Scripts
-    
-    # Create the AppleScript
-    cat << 'EOF' > ~/Library/Scripts/open-kitty.scpt
-tell application "kitty"
-    activate
-end tell
-EOF
-
-    chmod +x ~/Library/Scripts/open-kitty.scpt
-
-    print_success "Kitty shortcut script created at ~/Library/Scripts/open-kitty.scpt"
-    print_warning "Please set up your keyboard shortcut manually in System Settings > Keyboard > Keyboard Shortcuts"
-}
-
 # Function to toggle window tiling
 toggle_window_tiling() {
     print_info "Toggling window tiling settings..."
@@ -116,7 +96,6 @@ auth       sufficient     pam_tid.so\
 print_info "Starting macOS setup script..."
 
 check_sudo
-setup_kitty_shortcut
 toggle_window_tiling
 configure_trackpad
 configure_dock
