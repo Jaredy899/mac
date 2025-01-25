@@ -91,6 +91,27 @@ enable_ssh() {
     print_success "SSH access enabled"
 }
 
+# Function to enable TouchID for sudo
+enable_touchid_sudo() {
+    print_info "Enabling TouchID authentication for sudo..."
+    
+    # Check if /etc/pam.d/sudo exists
+    if [ -f "/etc/pam.d/sudo" ]; then
+        # Check if TouchID is already enabled
+        if ! grep -q "pam_tid.so" "/etc/pam.d/sudo"; then
+            # Add TouchID authentication to sudo
+            sudo sed -i '.bak' '1i\
+auth       sufficient     pam_tid.so\
+' /etc/pam.d/sudo
+            print_success "TouchID authentication for sudo enabled"
+        else
+            print_warning "TouchID authentication for sudo is already enabled"
+        fi
+    else
+        print_error "sudo PAM configuration file not found"
+    fi
+}
+
 # Main execution
 print_info "Starting macOS setup script..."
 
@@ -100,5 +121,6 @@ toggle_window_tiling
 configure_trackpad
 configure_dock
 enable_ssh
+enable_touchid_sudo
 
 print_colored "$GREEN" "Setup complete!"
