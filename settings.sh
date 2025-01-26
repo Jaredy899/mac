@@ -93,19 +93,19 @@ auth       sufficient     pam_tid.so\
 }
 
 # Function to configure Finder preferences
-configure_finder() {
-    print_info "Configuring Finder preferences..."
+# configure_finder() {
+#     print_info "Configuring Finder preferences..."
     
-    # Show hidden files
-    defaults write com.apple.finder AppleShowAllFiles -bool true
-    # Show path bar
-    defaults write com.apple.finder ShowPathbar -bool true
-    # Show status bar
-    defaults write com.apple.finder ShowStatusBar -bool true
+#     # Show hidden files
+#     defaults write com.apple.finder AppleShowAllFiles -bool true
+#     # Show path bar
+#     defaults write com.apple.finder ShowPathbar -bool true
+#     # Show status bar
+#     defaults write com.apple.finder ShowStatusBar -bool true
     
-    killall Finder
-    print_success "Finder preferences updated"
-}
+#     killall Finder
+#     print_success "Finder preferences updated"
+# }
 
 # Function to set default screenshot location
 set_screenshot_location() {
@@ -147,7 +147,7 @@ configure_trackpad
 configure_dock
 enable_ssh
 enable_touchid_sudo
-configure_finder
+# configure_finder
 set_screenshot_location
 #configure_energy_saver
 #enable_firewall
