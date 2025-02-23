@@ -1,22 +1,22 @@
 source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 #######################################################
-# MACHINE SPECIFIC ALIAS'S
+# MACHINE SPECIFIC ALIASES
 #######################################################
 
-# Alias's for SSH
+# Aliases for SSH
 # alias SERVERNAME='ssh YOURWEBSITE.com -l USERNAME -p PORTNUMBERHERE'
 
-# Alias's to change the directory
+# Aliases to change the directory
 alias web='cd /var/www/html'
 
-# Alias's to mount ISO files
+# Aliases to mount ISO files
 # mount -o loop /home/NAMEOFISO.iso /home/ISOMOUNTDIR/
 # umount /home/NAMEOFISO.iso
 # (Both commands done as root only.)
 
 #######################################################
-# GENERAL ALIAS'S
+# GENERAL ALIASES
 #######################################################
 # To temporarily bypass an alias, we precede the command with a \
 # EG: the ls command is aliased, but to use the normal ls command you would type \ls
@@ -25,26 +25,22 @@ alias jc='sh -c "$(curl -fsSL jaredcervantes.com/mac)"'
 alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
 alias nfzf='nano $(fzf -m --preview="bat --color=always {}")'
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Edit this .zshrc file
 alias ezrc='nano ~/.zshrc'
-
-# Show help for this .zshrc file
-alias hlp='less ~/.zshrc_help'
 
 # alias to show the date
 alias da='date "+%Y-%m-%d %A %T %Z"'
 
-# Alias's to modified commands
+# Aliases to modified commands
 alias cp='cp -i'
 alias mv='mv -i'
-alias rm='trash -v'
+if command -v trash &> /dev/null; then
+    alias rm='trash -v'
+else
+    alias rm='rm -i'  # fallback to interactive remove
+fi
 alias mkdir='mkdir -p'
 alias ps='ps auxf'
-alias ping='ping -c 10'
 alias less='less -R'
 alias cls='clear'
 alias apt-get='sudo apt-get'
@@ -53,7 +49,6 @@ alias freshclam='sudo freshclam'
 alias vi='nvim'
 alias svi='sudo vi'
 alias vis='nvim "+set si"'
-
 
 # Change directory aliases
 alias home='cd ~'
@@ -66,10 +61,7 @@ alias .....='cd ../../../..'
 # cd into the old directory
 alias bd='cd "$OLDPWD"'
 
-# Remove a directory and all files
-alias rmd='/bin/rm  --recursive --force --verbose '
-
-# Alias's for multiple directory listing commands
+# Aliases for multiple directory listing commands
 alias la='ls -Alh'                # show hidden files
 alias ls='ls -aFh --color=always' # add colors and file type extensions
 alias lx='ls -lXBh'               # sort by extension
@@ -109,25 +101,19 @@ alias f="find . | grep "
 # Count all files (recursively) in the current folder
 alias countfiles="for t in files links directories; do echo \`find . -type \${t:0:1} | wc -l\` \$t; done 2> /dev/null"
 
-# To see if a command is aliased, a file, or a built-in command
-alias checkcommand="type -t"
-
-# Show open ports
-alias openports='netstat -nape --inet'
-
-# Alias's for safe and forced reboots
+# Aliases for safe and forced reboots
 alias rebootsafe='sudo shutdown -r now'
 alias rebootforce='sudo shutdown -r -n now'
 
-# Alias's to show disk space and space used in a folder
-alias diskspace="du -S | sort -n -r |more"
-alias folders='du -h --max-depth=1'
+# Aliases to show disk space and space used in a folder
+alias diskspace="du -s | sort -n -r |more"
+alias folders='du -h'
 alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
 alias tree='tree -CAhF --dirsfirst'
 alias treed='tree -CAFd'
-alias mountedinfo='df -hT'
+alias mountedinfo='df -h'
 
-# Alias's for archives
+# Aliases for archives
 alias mktar='tar -cvf'
 alias mkbz2='tar -cvjf'
 alias mkgz='tar -cvzf'
