@@ -153,6 +153,18 @@ ftext() {
 	grep -iIHrn --color=always "$1" . | less -r
 }
 
+# GitHub Additions
+
+gcom() {
+	git add .
+	git commit -m "$1"
+}
+lazyg() {
+	git add .
+	git commit -m "$1"
+	git push
+}
+
 # Copy file with a progress bar
 cpp() {
     rsync --progress "$1" "$2"
