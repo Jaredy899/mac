@@ -10,8 +10,35 @@ print_info "GITPATH is set to: $GITPATH"
 # GitHub URL base for the necessary configuration files
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/myzsh"
 
-# Function to install dependencies
-installDepend() {
+# Function to setup Neovim
+setupNeovim() {
+    print_info "Setting up Neovim..."
+    
+    # Install Neovim and dependencies with brew
+    print_info "Installing Neovim and dependencies..."
+    brew install neovim ripgrep fzf
+    
+    # Backup existing config if it exists
+    if [ -d "$HOME/.config/nvim" ] && [ ! -d "$HOME/.config/nvim-backup" ]; then
+        print_info "Backing up existing Neovim config..."
+        cp -r "$HOME/.config/nvim" "$HOME/.config/nvim-backup"
+    fi
+    
+    # Clear existing config
+    rm -rf "$HOME/.config/nvim"
+    mkdir -p "$HOME/.config/nvim"
+    
+    # Clone Titus kickstart config directly to .config/nvim
+    print_info "Applying Titus Kickstart config..."
+    git clone --depth 1 https://github.com/ChrisTitusTech/neovim.git /tmp/neovim
+    cp -r /tmp/neovim/titus-kickstart/* "$HOME/.config/nvim/"
+    rm /tmp/neovim
+    
+    print_success "Neovim setup completed."
+}
+
+# Function to install dependencies for zsh
+installZshDepend() {
     # List of dependencies
     DEPENDENCIES=(zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
 
@@ -42,8 +69,8 @@ installDepend() {
     fi
 }
 
-# Function to link or copy configurations
-linkConfig() {
+# Function to link or copy zsh configurations
+linkZshConfig() {
     USER_HOME="$HOME"
     CONFIG_DIR="$USER_HOME/.config"
     
@@ -109,6 +136,9 @@ replace_zshrc() {
 }
 
 # Run all functions
-installDepend
-linkConfig
+print_info "Setting up zsh environment..."
+installZshDepend
+linkZshConfig
 replace_zshrc
+setupNeovim
+print_success "Setup completed successfully. Please restart your terminal to apply changes."
