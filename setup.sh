@@ -43,10 +43,10 @@ run_dock_manager() {
 run_myzsh() {
     if [[ -f "$GITPATH/myzsh/myzsh.sh" ]]; then
         echo "Running myzsh.sh from local directory..."
-        bash "$GITPATH/myzsh/myzsh.sh"
+        zsh "$GITPATH/myzsh/myzsh.sh"
     else
         echo "Running myzsh.sh from GitHub..."
-        bash -c "$(curl -fsSL $GITHUB_BASE_URL/myzsh/myzsh.sh)"
+        zsh -c "$(curl -fsSL $GITHUB_BASE_URL/myzsh/myzsh.sh)"
     fi
 }
 
