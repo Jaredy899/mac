@@ -25,6 +25,7 @@ alias jc='sh -c "$(curl -fsSL jaredcervantes.com/mac)"'
 alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
 alias nfzf='nano $(fzf -m --preview="bat --color=always {}")'
 alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+alias dup='docker-compose up -d --pull always --force-recreate'
 
 # Edit this .zshrc file
 alias ezrc='nano ~/.zshrc'
