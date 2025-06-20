@@ -26,6 +26,7 @@ alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/ma
 alias nfzf='nano $(fzf -m --preview="bat --color=always {}")'
 alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
 alias dup='docker-compose up -d --pull always --force-recreate'
+alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S"
 
 # Edit this .zshrc file
 alias ezrc='nano ~/.zshrc'
@@ -65,7 +66,11 @@ alias bd='cd "$OLDPWD"'
 
 # Aliases for multiple directory listing commands
 alias la='ls -Alh'                # show hidden files
-alias ls='ls -aFh --color=always' # add colors and file type extensions
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias ls='ls -aFhG'  # macOS
+else
+    alias ls='ls -aFh --color=always'  # Linux
+fi
 alias lx='ls -lXBh'               # sort by extension
 alias lk='ls -lSrh'               # sort by size
 alias lc='ls -ltcrh'              # sort by change time
@@ -169,7 +174,7 @@ lazyg() {
 
 # Copy file with a progress bar
 cpp() {
-    rsync --progress "$1" "$2"
+    rsync -ah --progress "$1" "$2"
     awk '{
         count += $NF
         if (count % 10 == 0) {
@@ -206,22 +211,24 @@ mvg() {
 
 # Create and go to the directory
 mkdirg() {
-	mkdir -p "$1"
-	cd "$1"
+    if [[ -z "$1" ]]; then
+        echo "Usage: mkdirg <directory>"
+        return 1
+    fi
+    mkdir -p "$1" && cd "$1"
 }
 
-# Goes up a specified number of directories  (i.e. up 4)
 up() {
-	local d=""
-	limit=$1
-	for ((i = 1; i <= limit; i++)); do
-		d=$d/..
-	done
-	d=$(echo $d | sed 's/^\///')
-	if [ -z "$d" ]; then
-		d=..
-	fi
-	cd $d
+    local limit=${1:-1}
+    if ! [[ "$limit" =~ ^[0-9]+$ ]]; then
+        echo "Usage: up <number>"
+        return 1
+    fi
+    local d=""
+    for ((i = 1; i <= limit; i++)); do
+        d="../$d"
+    done
+    cd "${d%/}"
 }
 
 # Automatically do an ls after each cd, z, or zoxide
@@ -242,19 +249,16 @@ pwdtail() {
 # IP address lookup
 alias whatismyip="whatsmyip"
 
-function whatsmyip () {
-    # Internal IP Lookup.
-    if command -v ip &> /dev/null; then
-        echo -n "Internal IP: "
-        ip addr show | grep "inet " | grep -v 127.0.0.1 | awk '{print $2}' | cut -d/ -f1
+whatsmyip() {
+    echo "Internal IP:"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print "  " $2}'
     else
-        echo -n "Internal IP: "
-        ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print $2}'
+        ip addr show | grep "inet " | grep -v 127.0.0.1 | awk '{print "  " $2}' | cut -d/ -f1
     fi
-
-    # External IP Lookup
-    echo -n "External IP: "
-    curl -s ifconfig.me
+    
+    echo "External IP:"
+    curl -s ifconfig.me && echo
 }
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
