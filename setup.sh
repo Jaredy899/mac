@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Source the common script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -72,6 +72,12 @@ run_ssh_key_setup() {
     fi
 }
 
+# Function to launch macutil
+run_macutil() {
+    print_info "Launching macutil..."
+    sh <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/jaredmacutil/main/start.sh)
+}
+
 # Check if Homebrew is installed and install it if not
 if ! command -v brew &> /dev/null; then
     print_warning "Homebrew is required but not installed. Installing Homebrew..."
@@ -94,13 +100,14 @@ show_setup_menu() {
     show_menu_item 3 "$selected" "Run myzsh to enhance your terminal appearance"
     show_menu_item 4 "$selected" "Run Settings Manager to configure system settings"
     show_menu_item 5 "$selected" "Setup SSH Keys"
-    show_menu_item 6 "$selected" "Exit"
+    show_menu_item 6 "$selected" "Launch macutil"
+    show_menu_item 7 "$selected" "Exit"
 }
 
 # Keep running until user chooses to exit
 while true; do
     # Handle menu selection
-    handle_menu_selection 6 "Setup Menu" show_setup_menu
+    handle_menu_selection 7 "Setup Menu" show_setup_menu
     choice=$?
 
     case $choice in
@@ -125,6 +132,10 @@ while true; do
             run_ssh_key_setup
             ;;
         6)
+            print_info "Launching macutil..."
+            run_macutil
+            ;;
+        7)
             print_info "Exiting setup script."
             break
             ;;
