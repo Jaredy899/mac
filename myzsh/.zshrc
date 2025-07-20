@@ -21,7 +21,7 @@ alias web='cd /var/www/html'
 # To temporarily bypass an alias, we precede the command with a \
 # EG: the ls command is aliased, but to use the normal ls command you would type \ls
 
-alias jc='sh -c "$(curl -fsSL jaredcervantes.com/mac)"'
+alias jc='bash <(curl -fsSL jaredcervantes.com/mac)'
 alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
 alias nfzf='nano $(fzf -m --preview="bat --color=always {}")'
 alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
