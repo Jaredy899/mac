@@ -75,7 +75,7 @@ run_ssh_key_setup() {
 # Function to launch macutil
 run_macutil() {
     print_info "Launching macutil..."
-    sh <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/jaredmacutil/main/start.sh)
+    bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/jaredmacutil/main/start.sh)
 }
 
 # Check if Homebrew is installed and install it if not
