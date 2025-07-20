@@ -21,8 +21,8 @@ A comprehensive set of scripts to automate setting up and configuring macOS envi
 
 To get started, open your terminal and run:
 
-```sh
-sh <(curl -fsSL jaredcervantes.com/mac)
+```bash
+bash <(curl -fsSL jaredcervantes.com/mac)
 ```
 
 ## 📄 License
