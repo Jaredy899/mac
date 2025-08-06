@@ -1,93 +1,90 @@
-source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+# -----------------------------------------
+# Environment
+# -----------------------------------------
+export ZDOTDIR="${ZDOTDIR:-$HOME}"
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less -R"
 
-#######################################################
-# MACHINE SPECIFIC ALIASES
-#######################################################
+# PATH (Homebrew first), dedup
+path=(
+  /opt/homebrew/bin
+  /opt/homebrew/sbin
+  $path
+)
+typeset -U path PATH
 
-# Aliases for SSH
-# alias SERVERNAME='ssh YOURWEBSITE.com -l USERNAME -p PORTNUMBERHERE'
+# -----------------------------------------
+# Completion first (needed before plugins)
+# -----------------------------------------
+autoload -Uz compinit
+COMPINIT_FILE="${ZDOTDIR}/.zcompdump"
+if [[ -r "$COMPINIT_FILE" ]]; then
+  compinit -C -d "$COMPINIT_FILE"
+else
+  compinit -d "$COMPINIT_FILE"
+fi
 
-# Aliases to change the directory
-alias web='cd /var/www/html'
+# -----------------------------------------
+# Prompt and core tools (order matters)
+# -----------------------------------------
+# Starship prompt
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
 
-# Aliases to mount ISO files
-# mount -o loop /home/NAMEOFISO.iso /home/ISOMOUNTDIR/
-# umount /home/NAMEOFISO.iso
-# (Both commands done as root only.)
+# zoxide
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
-#######################################################
-# GENERAL ALIASES
-#######################################################
-# To temporarily bypass an alias, we precede the command with a \
-# EG: the ls command is aliased, but to use the normal ls command you would type \ls
+# zsh-autocomplete (optional; after compinit and starship)
+ZSH_AUTOCOMPLETE_PATH="/opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+if [[ -r "$ZSH_AUTOCOMPLETE_PATH" ]]; then
+  source "$ZSH_AUTOCOMPLETE_PATH"
+fi
 
-alias jc='bash <(curl -fsSL jaredcervantes.com/mac)'
-alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
-alias nfzf='nano $(fzf -m --preview="bat --color=always {}")'
-alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
-alias dup='docker-compose up -d --pull always --force-recreate'
-alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S"
-
-# Edit this .zshrc file
+# -----------------------------------------
+# Aliases (mac-only)
+# -----------------------------------------
 alias ezrc='nano ~/.zshrc'
-
-# alias to show the date
 alias da='date "+%Y-%m-%d %A %T %Z"'
 
-# Aliases to modified commands
 alias cp='cp -i'
 alias mv='mv -i'
-if command -v trash &> /dev/null; then
-    alias rm='trash -v'
+if command -v trash >/dev/null 2>&1; then
+  alias rm='trash -v'
 else
-    alias rm='rm -i'  # fallback to interactive remove
+  alias rm='rm -i'
 fi
 alias mkdir='mkdir -p'
-alias ps='ps auxf'
 alias less='less -R'
 alias cls='clear'
-alias apt-get='sudo apt-get'
-alias multitail='multitail --no-repeat -c'
-alias freshclam='sudo freshclam'
 alias vi='nvim'
-alias svi='sudo vi'
+alias svi='sudo nvim'
 alias vis='nvim "+set si"'
 
-# Change directory aliases
-alias home='cd ~'
-alias cd..='cd ..'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-
-# cd into the old directory
-alias bd='cd "$OLDPWD"'
-
-# Aliases for multiple directory listing commands
-alias la='ls -Alh'                # show hidden files
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    alias ls='ls -aFhG'  # macOS
+# eza for listings
+if command -v eza >/dev/null 2>&1; then
+  alias ls='eza -aF --group-directories-first --icons --color=auto'
+  alias la='eza -alh --group-directories-first --icons'
+  alias ll='eza -al --group-directories-first --icons'
+  alias lr='eza -alR --group-directories-first --icons'
+  alias lt='eza -al --sort=modified --reverse --group-directories-first --icons'
+  alias lw='eza -a --oneline --icons'
+  alias labc='eza -a --sort=name --icons'
+  alias lk='eza -al --sort=size --reverse --icons'
+  alias lx='eza -al --sort=ext --icons'
+  alias lla='eza -al --icons'
+  alias las='eza -a --icons'
+  alias lls='eza -l --icons'
 else
-    alias ls='ls -aFh --color=always'  # Linux
+  alias ls='ls -aFhG'
+  alias la='ls -Alh'
+  alias ll='ls -Fls'
 fi
-alias lx='ls -lXBh'               # sort by extension
-alias lk='ls -lSrh'               # sort by size
-alias lc='ls -ltcrh'              # sort by change time
-alias lu='ls -lturh'              # sort by access time
-alias lr='ls -lRh'                # recursive ls
-alias lt='ls -ltrh'               # sort by date
-alias lm='ls -alh |more'          # pipe through 'more'
-alias lw='ls -xAh'                # wide listing format
-alias ll='ls -Fls'                # long listing format
-alias labc='ls -lap'              # alphabetical sort
-alias lf="ls -l | egrep -v '^d'"  # files only
-alias ldir="ls -l | egrep '^d'"   # directories only
-alias lla='ls -Al'                # List and Hidden Files
-alias las='ls -A'                 # Hidden Files
-alias lls='ls -l'                 # List
 
-# alias chmod commands
+# chmod helpers
 alias mx='chmod a+x'
 alias 000='chmod -R 000'
 alias 644='chmod -R 644'
@@ -95,196 +92,202 @@ alias 666='chmod -R 666'
 alias 755='chmod -R 755'
 alias 777='chmod -R 777'
 
-# Search command line history
-alias h="history | grep "
-
-# Search running processes
+# Processes
 alias p="ps aux | grep "
 alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
 
-# Search files in the current folder
-alias f="find . | grep "
-
-# Count all files (recursively) in the current folder
-alias countfiles="for t in files links directories; do echo \`find . -type \${t:0:1} | wc -l\` \$t; done 2> /dev/null"
-
-# Aliases for safe and forced reboots
-alias rebootsafe='sudo shutdown -r now'
-alias rebootforce='sudo shutdown -r -n now'
-
-# Aliases to show disk space and space used in a folder
-alias diskspace="du -s | sort -n -r |more"
+# Disk and mounts
 alias folders='du -h'
 alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
-alias tree='tree -CAhF --dirsfirst'
-alias treed='tree -CAFd'
 alias mountedinfo='df -h'
 
-# Aliases for archives
+# tree
+if command -v eza >/dev/null 2>&1; then
+  alias tree='eza -T -l --group-directories-first --icons'
+  alias treed='eza -T -D --icons'
+elif command -v tree >/dev/null 2>&1; then
+  alias tree='tree -CAhF --dirsfirst'
+  alias treed='tree -CAFd'
+fi
+
+# Archives
 alias mktar='tar -cvf'
 alias mkbz2='tar -cvjf'
 alias mkgz='tar -cvzf'
 alias untar='tar -xvf'
-alias unbz2='tar -xvjf'
+alias unbz2='tar -xvzf'  # note: bunzip2 or tar -xjf for .bz2
 alias ungz='tar -xvzf'
 
-# Show all logs in /var/log
-alias logs="sudo find /var/log -type f -exec file {} \; | grep 'text' | cut -d' ' -f1 | sed -e's/:$//g' | grep -v '[0-9]$' | xargs tail -f"
+# Logs
+alias logs="sudo find /var/log -type f -exec file {} \; | \
+  grep 'text' | cut -d' ' -f1 | sed -e's/:$//g' | \
+  grep -v '[0-9]$' | xargs tail -f"
 
-# SHA1
-alias sha1='openssl sha1'
+# Hashing
+alias sha1='shasum -a 1'
 
-alias clickpaste='sleep 3; xdotool type "$(xclip -o -selection clipboard)"'
+# Docker
+alias dup='docker compose up -d --pull always --force-recreate'
+alias docker-clean='docker container prune -f; docker image prune -f; docker network prune -f; docker volume prune -f'
 
-# KITTY - alias to be able to use kitty features when connecting to remote servers(e.g use tmux on remote server)
-
+# Kitty
 alias kssh="kitty +kitten ssh"
 
-# alias to cleanup unused docker containers, images, networks, and volumes
+# External scripts
+alias jc='bash <(curl -fsSL jaredcervantes.com/mac)'
+alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
 
-alias docker-clean=' \
-  docker container prune -f ; \
-  docker image prune -f ; \
-  docker network prune -f ; \
-  docker volume prune -f '
+# DNS flush (mac)
+alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
 
-  # Searches for text in all files in the current folder
-ftext() {
-	# -i case-insensitive
-	# -I ignore binary files
-	# -H causes filename to be printed
-	# -r recursive search
-	# -n causes line number to be printed
-	# optional: -F treat search term as a literal, not a regular expression
-	# optional: -l only print filenames and not the matching lines ex. grep -irl "$1" *
-	grep -iIHrn --color=always "$1" . | less -r
+
+# Dev shortcut
+
+# pnpm dev shortcut
+pd() {
+  local dir
+  dir="$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
+  (cd "$dir" && pnpm dev)
 }
 
-# GitHub Additions
+#rust
+cr() {
+  local dir
+  dir="$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
+  (cd "$dir" && cargo run)
+}
 
+# -----------------------------------------
+# ripgrep + bat integrations
+# -----------------------------------------
+ftext() {
+  local q="$1"
+  if [[ -z "$q" ]]; then
+    echo "Usage: ftext <pattern>"
+    return 1
+  fi
+  if command -v rg >/dev/null 2>&1; then
+    if command -v bat >/dev/null 2>&1; then
+      rg --hidden --no-ignore-vcs -n --smart-case --color=always "$q" \
+        | while IFS=: read -r file line rest; do
+            [[ -z "$file" || -z "$line" ]] && continue
+            echo "==> $file:$line <=="
+            bat --style=plain --color=always --line-range "$line":"$line" "$file"
+          done | less -R
+    else
+      rg --hidden --no-ignore-vcs -n --smart-case --color=always "$q" | less -R
+    fi
+  else
+    grep -iIHrn --color=always "$q" . | less -R
+  fi
+}
+
+ff() {
+  local q="$1"
+  [[ -z "$q" ]] && { echo "Usage: ff <pattern>"; return 1; }
+  if command -v rg >/dev/null 2>&1; then
+    rg --hidden --no-ignore-vcs -n --smart-case -S --color=always "$q" | less -R
+  else
+    find . -type f -print0 | xargs -0 grep -nI --color=always "$q" | less -R
+  fi
+}
+
+preview() {
+  [[ -z "$1" ]] && { echo "Usage: preview <file>"; return 1; }
+  if command -v bat >/dev/null 2>&1; then
+    bat --style=plain --paging=always "$1"
+  else
+    less -R "$1"
+  fi
+}
+
+if command -v fzf >/dev/null 2>&1; then
+  if command -v bat >/dev/null 2>&1; then
+    alias nfzf='nano "$(fzf -m --preview=\"bat --color=always {}\")"'
+  else
+    alias nfzf='nano "$(fzf -m)"'
+  fi
+fi
+
+# -----------------------------------------
+# Git helpers
+# -----------------------------------------
 gcom() {
-	git add .
-	git commit -m "$1"
+  git add .
+  git commit -m "$1"
 }
 lazyg() {
-	git add .
-	git commit -m "$1"
-	git push
+  git add .
+  git commit -m "$1"
+  git push
 }
-
 newb() {
-  local branch="$1"
-  shift
+  local branch="$1"; shift
   local msg="$*"
-
-  if [ -z "$branch" ] || [ -z "$msg" ]; then
+  if [[ -z "$branch" || -z "$msg" ]]; then
     echo "Usage: newb <branch> <commit message>"
     return 1
   fi
-
+  git rev-parse --git-dir >/dev/null 2>&1 || { echo "Not a git repo"; return 1; }
   git checkout -b "$branch" || return 1
   git add .
   git commit -m "$msg" || return 1
   git push -u origin "$branch"
 }
 
-gbd() { # usage: gbD <branch>
-  local b="$1"
-  if [ -z "$b" ]; then
-    echo "Usage: gbD <branch>"
-    return 1
-  fi
-  git branch -D "$b"
-}
+alias gb='git branch'
+alias gs='git switch'            # usage: gs <branch>
+alias gbd='git branch -D'        # usage: gbd <branch>
 
-# Copy file with a progress bar
-cpp() {
-    rsync -ah --progress "$1" "$2"
-    awk '{
-        count += $NF
-        if (count % 10 == 0) {
-            percent = count / total_size * 100
-            printf "%3d%% [", percent
-            for (i=0;i<=percent;i++)
-                printf "="
-            printf ">"
-            for (i=percent;i<100;i++)
-                printf " "
-            printf "]\r"
-        }
-    }
-    END { print "" }' total_size="$(stat -c '%s' "${1}")" count=0
-}
-
-# Copy and go to the directory
+# -----------------------------------------
+# File ops with cd
+# -----------------------------------------
 cpg() {
-	if [ -d "$2" ]; then
-		cp "$1" "$2" && cd "$2"
-	else
-		cp "$1" "$2"
-	fi
+  if [[ -d "$2" ]]; then cp "$1" "$2" && cd "$2"; else cp "$1" "$2"; fi
 }
-
-# Move and go to the directory
 mvg() {
-	if [ -d "$2" ]; then
-		mv "$1" "$2" && cd "$2"
-	else
-		mv "$1" "$2"
-	fi
+  if [[ -d "$2" ]]; then mv "$1" "$2" && cd "$2"; else mv "$1" "$2"; fi
 }
-
-# Create and go to the directory
 mkdirg() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: mkdirg <directory>"
-        return 1
-    fi
-    mkdir -p "$1" && cd "$1"
+  [[ -z "$1" ]] && { echo "Usage: mkdirg <directory>"; return 1; }
+  mkdir -p "$1" && cd "$1"
 }
-
 up() {
-    local limit=${1:-1}
-    if ! [[ "$limit" =~ ^[0-9]+$ ]]; then
-        echo "Usage: up <number>"
-        return 1
-    fi
-    local d=""
-    for ((i = 1; i <= limit; i++)); do
-        d="../$d"
-    done
-    cd "${d%/}"
+  local limit=${1:-1}
+  [[ "$limit" =~ ^[0-9]+$ ]] || { echo "Usage: up <number>"; return 1; }
+  local d=""
+  for ((i = 1; i <= limit; i++)); do d="../$d"; done
+  cd "${d%/}"
 }
-
-# Automatically do an ls after each cd, z, or zoxide
-cd ()
-{
-	if [ -n "$1" ]; then
-		builtin cd "$@" && ls
-	else
-		builtin cd ~ && ls
-	fi
+cd() {
+  if [[ -n "$1" ]]; then builtin cd "$@" && ls; else builtin cd ~ && ls; fi
 }
-
-# Returns the last 2 fields of the working directory
 pwdtail() {
-	pwd | awk -F/ '{nlast = NF -1;print $nlast"/"$NF}'
+  pwd | awk -F/ '{nlast = NF -1; print $nlast"/"$NF}'
 }
 
-# IP address lookup
+# cat -> bat (plain), with fallback
+if command -v bat >/dev/null 2>&1; then
+  # Keep colors for syntax, no extra decorations; behave like cat
+  alias cat='bat --plain --paging=never --color=auto'
+fi
+
+# -----------------------------------------
+# IP helpers (mac)
+# -----------------------------------------
 alias whatismyip="whatsmyip"
-
 whatsmyip() {
-    echo "Internal IP:"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print "  " $2}'
-    else
-        ip addr show | grep "inet " | grep -v 127.0.0.1 | awk '{print "  " $2}' | cut -d/ -f1
-    fi
-    
-    echo "External IP:"
-    curl -s ifconfig.me && echo
+  echo "Internal IP:"
+  ipconfig getifaddr en0 2>/dev/null | sed 's/^/  /'
+  ipconfig getifaddr en1 2>/dev/null | sed 's/^/  /'
+  echo "External IP:"
+  curl -sS https://ifconfig.me || curl -sS https://api.ipify.org
+  echo
 }
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-fastfetch
+
+# -----------------------------------------
+# Fastfetch (run synchronously in interactive shells)
+# -----------------------------------------
+if [[ -o interactive ]] && command -v fastfetch >/dev/null 2>&1; then
+  fastfetch
+fi
