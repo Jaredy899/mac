@@ -70,7 +70,7 @@
         },
         {
             "type": "custom",
-            "format": "├─────────────────── \u001b[1;33mNetwork & Weather\u001b[0m ─────────────────────┤"
+            "format": "├─────────────────── \u001b[1;33mNetwork & Date\u001b[0m ─────────────────────┤"
         },
         {
             "type": "datetime",
@@ -88,11 +88,11 @@
             "keyColor": "blue",
             "text": "tailscale_ip=$(tailscale ip -4); echo $tailscale_ip"
         },
-        {
-            "type": "weather",
-            "timeout": 1000,
-            "key": "  "
-        },
+        // {
+        //     "type": "weather",
+        //     "timeout": 1000,
+        //     "key": "  "
+        // },
         {
             "type": "custom",
             "format": "├───────────────────── \u001b[1;35mSystem Status\u001b[0m ───────────────────────┤"
