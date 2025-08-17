@@ -38,10 +38,12 @@ if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi
 
-# zsh-autocomplete (optional; after compinit and starship)
-ZSH_AUTOCOMPLETE_PATH="/opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
-if [[ -r "$ZSH_AUTOCOMPLETE_PATH" ]]; then
-  source "$ZSH_AUTOCOMPLETE_PATH"
+# Fast, non-laggy suggestions:
+if command -v zsh-autosuggestions >/dev/null 2>&1; then
+  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+if command -v zsh-syntax-highlighting >/dev/null 2>&1; then
+  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 # -----------------------------------------
@@ -83,6 +85,11 @@ else
   alias la='ls -Alh'
   alias ll='ls -Fls'
 fi
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
 
 # chmod helpers
 alias mx='chmod a+x'
@@ -136,6 +143,7 @@ alias kssh="kitty +kitten ssh"
 # External scripts
 alias jc='bash <(curl -fsSL jaredcervantes.com/mac)'
 alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
+alias os='sh <(curl -fsSL jaredcervantes.com/os)'
 
 # DNS flush (mac)
 alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
@@ -235,8 +243,28 @@ newb() {
   git push -u origin "$branch"
 }
 
+# Fuzzy branch picker (requires fzf)
+gs() {
+    branch=$(git branch --all --color=never \
+        | sed 's/^[* ]*//' \
+        | sort -u \
+        | fzf --prompt="Switch to branch: ")
+
+    if [ -n "$branch" ]; then
+        # Remove "remotes/" prefix if present
+        clean_branch="${branch#remotes/}"
+
+        if [[ "$branch" == remotes/* ]]; then
+            git switch --track "$clean_branch" 2>/dev/null || \
+            git checkout -b "${clean_branch#origin/}" --track "$clean_branch"
+        else
+            git switch "$clean_branch"
+        fi
+    fi
+}
+
+alias gp='git pull'
 alias gb='git branch'
-alias gs='git switch'            # usage: gs <branch>
 alias gbd='git branch -D'        # usage: gbd <branch>
 
 # -----------------------------------------
