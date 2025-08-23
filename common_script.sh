@@ -1,13 +1,37 @@
 #!/bin/sh
 
-# Color definitions
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
-CYAN='\033[0;36m'
-RC='\033[0m' # Reset color
+# Color support detection
+if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
+    # Terminal supports colors
+    colors=$(tput colors 2>/dev/null || echo 0)
+    if [ "$colors" -ge 8 ]; then
+        RED='\033[0;31m'
+        GREEN='\033[0;32m'
+        YELLOW='\033[1;33m'
+        BLUE='\033[0;34m'
+        MAGENTA='\033[0;35m'
+        CYAN='\033[0;36m'
+        RC='\033[0m' # Reset color
+    else
+        # Minimal color support
+        RED=''
+        GREEN=''
+        YELLOW=''
+        BLUE=''
+        MAGENTA=''
+        CYAN=''
+        RC=''
+    fi
+else
+    # No color support (not a terminal or tput not available)
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    MAGENTA=''
+    CYAN=''
+    RC=''
+fi
 
 # Function to read keyboard input
 read_key() {
