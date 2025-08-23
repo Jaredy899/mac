@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Source the common script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -18,7 +18,7 @@ install_homebrew() {
 
 # Function to run the brew_manager.sh script from local or GitHub
 run_brew_manager() {
-    if [[ -f "$GITPATH/homebrew_scripts/brew_manager.sh" ]]; then
+    if [ -f "$GITPATH/homebrew_scripts/brew_manager.sh" ]; then
         print_info "Running brew_manager.sh from local directory..."
         bash "$GITPATH/homebrew_scripts/brew_manager.sh"
     else
@@ -29,8 +29,8 @@ run_brew_manager() {
 
 # Function to run the dock_manager.sh script from local or GitHub
 run_dock_manager() {
-    local dock_scripts_path="$GITPATH/dock_scripts"
-    if [[ -f "$dock_scripts_path/dock_manager.sh" ]]; then
+    dock_scripts_path="$GITPATH/dock_scripts"
+    if [ -f "$dock_scripts_path/dock_manager.sh" ]; then
         echo "Running dock_manager.sh from local directory..."
         bash "$dock_scripts_path/dock_manager.sh" "$dock_scripts_path"
     else
@@ -41,7 +41,7 @@ run_dock_manager() {
 
 # Function to run the myzsh.sh script from local or GitHub
 run_myzsh() {
-    if [[ -f "$GITPATH/myzsh/myzsh.sh" ]]; then
+    if [ -f "$GITPATH/myzsh/myzsh.sh" ]; then
         echo "Running myzsh.sh from local directory..."
         bash "$GITPATH/myzsh/myzsh.sh"
     else
@@ -52,7 +52,7 @@ run_myzsh() {
 
 # Function to run the settings.sh script from local or GitHub
 run_settings() {
-    if [[ -f "$GITPATH/settings.sh" ]]; then
+    if [ -f "$GITPATH/settings.sh" ]; then
         echo "Running settings.sh from local directory..."
         bash "$GITPATH/settings.sh"
     else
@@ -63,7 +63,7 @@ run_settings() {
 
 # Function to run the add_ssh_key.sh script from local or GitHub
 run_ssh_key_setup() {
-    if [[ -f "$GITPATH/add_ssh_key.sh" ]]; then
+    if [ -f "$GITPATH/add_ssh_key.sh" ]; then
         print_info "Running add_ssh_key.sh from local directory..."
         sh "$GITPATH/add_ssh_key.sh"
     else
@@ -72,19 +72,23 @@ run_ssh_key_setup() {
     fi
 }
 
-# Function to launch macutil
-run_macutil() {
-    print_info "Launching macutil..."
-    bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/jaredmacutil/main/start.sh)
+# Function to launch OSutil
+run_osutil() {
+    print_info "Launching OSutil..."
+    # Use temporary file for POSIX compatibility (alternative to process substitution)
+    temp_script=$(mktemp)
+    curl -fsSL jaredcervantes.com/os > "$temp_script"
+    sh "$temp_script"
+    rm -f "$temp_script"
 }
 
 # Check if Homebrew is installed and install it if not
-if ! command -v brew &> /dev/null; then
+if ! command -v brew > /dev/null 2>&1; then
     print_warning "Homebrew is required but not installed. Installing Homebrew..."
     install_homebrew
 
     # Add Homebrew to PATH and source it immediately
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+    echo "eval \"\$(/opt/homebrew/bin/brew shellenv)\"" >> "$HOME/.zprofile"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 else
     print_success "Homebrew is already installed."
@@ -100,9 +104,12 @@ show_setup_menu() {
     show_menu_item 3 "$selected" "Run myzsh to enhance your terminal appearance"
     show_menu_item 4 "$selected" "Run Settings Manager to configure system settings"
     show_menu_item 5 "$selected" "Setup SSH Keys"
-    show_menu_item 6 "$selected" "Launch macutil"
+    show_menu_item 6 "$selected" "Launch OSutil"
     show_menu_item 7 "$selected" "Exit"
 }
+
+# Initialize selected menu item
+selected=1
 
 # Keep running until user chooses to exit
 while true; do
@@ -132,8 +139,8 @@ while true; do
             run_ssh_key_setup
             ;;
         6)
-            print_info "Launching macutil..."
-            run_macutil
+            print_info "Launching OSutil..."
+            run_osutil
             ;;
         7)
             print_info "Exiting setup script."
@@ -143,4 +150,4 @@ while true; do
 done
 
 # Update the completion message
-print_colored "$GREEN" "Setup completed"
+print_success "Setup completed"

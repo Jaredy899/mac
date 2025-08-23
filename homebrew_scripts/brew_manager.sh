@@ -12,7 +12,7 @@ GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main
 
 # Function to run the updater script
 run_updater() {
-    if [[ -f "$GITPATH/brew_updater.sh" ]]; then
+    if [ -f "$GITPATH/brew_updater.sh" ]; then
         print_success "Running Brew Updater from local directory..."
         bash "$GITPATH/brew_updater.sh"
     else
@@ -23,7 +23,7 @@ run_updater() {
 
 # Function to run the installer script
 run_installer() {
-    if [[ -f "$GITPATH/brew_installer.sh" ]]; then
+    if [ -f "$GITPATH/brew_installer.sh" ]; then
         print_success "Running Brew Installer from local directory..."
         bash "$GITPATH/brew_installer.sh"
     else
@@ -34,7 +34,7 @@ run_installer() {
 
 # Function to run the uninstaller script
 run_uninstaller() {
-    if [[ -f "$GITPATH/brew_uninstaller.sh" ]]; then
+    if [ -f "$GITPATH/brew_uninstaller.sh" ]; then
         print_success "Running Brew Uninstaller from local directory..."
         bash "$GITPATH/brew_uninstaller.sh"
     else
@@ -45,6 +45,10 @@ run_uninstaller() {
 
 # Function to show brew menu items
 show_brew_menu() {
+    # Initialize selected if not already set
+    if [ -z "$selected" ]; then
+        selected=1
+    fi
     show_menu_item 1 "$selected" "Run Brew Updater"
     show_menu_item 2 "$selected" "Run Brew Installer"
     show_menu_item 3 "$selected" "Run Brew Uninstaller"
@@ -61,17 +65,17 @@ while true; do
         1)
             print_info "Running Brew Updater..."
             run_updater
-            print_colored "$GREEN" "Update completed"
+            print_success "Update completed"
             ;;
         2)
             print_info "Running Brew Installer..."
             run_installer
-            print_colored "$GREEN" "Installer completed"
+            print_success "Installer completed"
             ;;
         3)
             print_info "Running Brew Uninstaller..."
             run_uninstaller
-            print_colored "$GREEN" "Uninstaller completed"
+            print_success "Uninstaller completed"
             ;;
         4)
             print_info "Returning to main menu."

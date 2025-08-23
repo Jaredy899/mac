@@ -5,7 +5,7 @@ eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/
 
 # Check for sudo privileges and request if needed
 check_sudo() {
-    if [ "$EUID" -ne 0 ]; then
+    if [ "$(id -u)" -ne 0 ]; then
         print_warning "This script requires sudo privileges for some operations."
         sudo -v || {
             print_error "Failed to obtain sudo privileges. Exiting."
@@ -152,4 +152,4 @@ set_screenshot_location
 #configure_energy_saver
 #enable_firewall
 
-print_colored "$GREEN" "Setup complete!"
+print_success "Setup complete!"

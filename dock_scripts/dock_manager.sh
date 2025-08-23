@@ -12,16 +12,19 @@ fi
 
 print_info "GITPATH is set to: $GITPATH"
 print_info "Current working directory: $(pwd)"
-print_info "Script location: ${BASH_SOURCE[0]}"
+print_info "Script location: $0"
+
+# Initialize selected menu item
+selected=1
 
 # GitHub URL base for the necessary Dock scripts
 GITHUB_BASE_URL="https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/dock_scripts/"
 
 # Function to remove Dock items using icon_remove.sh
 remove_dock_items() {
-    local script_path="$GITPATH/icon_remove.sh"
+    script_path="$GITPATH/icon_remove.sh"
     print_info "Checking for icon_remove.sh at: $script_path"
-    if [[ -f "$script_path" ]]; then
+    if [ -f "$script_path" ]; then
         print_success "Running icon_remove.sh from local directory..."
         bash "$script_path"
     else
@@ -32,9 +35,9 @@ remove_dock_items() {
 
 # Function to add Dock items using icon_add.sh
 add_dock_items() {
-    local script_path="$GITPATH/icon_add.sh"
+    script_path="$GITPATH/icon_add.sh"
     print_info "Checking for icon_add.sh at: $script_path"
-    if [[ -f "$script_path" ]]; then
+    if [ -f "$script_path" ]; then
         print_success "Running icon_add.sh from local directory..."
         bash "$script_path"
     else
@@ -52,6 +55,8 @@ show_dock_menu() {
 
 # Keep running until user chooses to exit
 while true; do
+    # Reset selected to 1 for each menu iteration
+    selected=1
     # Handle menu selection
     handle_menu_selection 3 "Dock Manager" show_dock_menu
     choice=$?
@@ -60,12 +65,12 @@ while true; do
         1)
             print_info "Adding Dock items..."
             add_dock_items
-            print_colored "$GREEN" "Dock completed"
+            print_success "Dock completed"
             ;;
         2)
             print_info "Removing Dock items..."
             remove_dock_items
-            print_colored "$GREEN" "Dock completed"
+            print_success "Dock completed"
             ;;
         3)
             print_info "Returning to main menu."

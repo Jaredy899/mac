@@ -39,11 +39,11 @@ setupNeovim() {
 
 # Function to install dependencies for zsh
 installZshDepend() {
-    # List of dependencies
-    DEPENDENCIES=(zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide)
+    # List of dependencies (POSIX compliant)
+    DEPENDENCIES="zsh zsh-autocomplete bat tree multitail fastfetch wget unzip fontconfig starship fzf zoxide"
 
     print_info "Installing dependencies..."
-    for package in "${DEPENDENCIES[@]}"; do
+    for package in $DEPENDENCIES; do
         print_info "Installing $package..."
         if ! brew install "$package"; then
             print_error "Failed to install $package. Please check your brew installation."
@@ -51,11 +51,11 @@ installZshDepend() {
         fi
     done
 
-    # List of cask dependencies
-    CASK_DEPENDENCIES=("kitty" "ghostty" "font-fira-code-nerd-font")
+    # List of cask dependencies (POSIX compliant)
+    CASK_DEPENDENCIES="kitty ghostty font-fira-code-nerd-font"
 
-    print_info "Installing cask dependencies: ${CASK_DEPENDENCIES[*]}"
-    for cask in "${CASK_DEPENDENCIES[@]}"; do
+    print_info "Installing cask dependencies: $CASK_DEPENDENCIES"
+    for cask in $CASK_DEPENDENCIES; do
         print_info "Installing $cask..."
         if ! brew install --cask "$cask"; then
             print_error "Failed to install $cask. Please check your brew installation."

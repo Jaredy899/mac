@@ -4,14 +4,14 @@
 eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
 
 # Function to refresh sudo credentials
-function refresh_sudo {
+refresh_sudo() {
     print_info "Refreshing sudo credentials..."
     sudo -v
 }
 
 # Function to update a specific Homebrew item if it's outdated
-function update_brew_item {
-    local item=$1
+update_brew_item() {
+    item=$1
     print_info "Updating $item"
 
     output=$(brew upgrade "$item" 2>&1 || true)
@@ -25,7 +25,7 @@ function update_brew_item {
         fi
     elif echo "$output" | grep -q "already installed"; then
         print_success "$item is already up to date!"
-    elif brew upgrade "$item" &>/dev/null; then
+    elif brew upgrade "$item" > /dev/null 2>&1; then
         print_success "$item updated successfully!"
     else
         print_error "Failed to update $item. Please check manually."
@@ -33,8 +33,7 @@ function update_brew_item {
 }
 
 # Function to update all apps and casks
-function update_brew_items {
-    installed_formulae=$(brew list --formula)
+update_brew_items() {
     installed_casks=$(brew list --cask)
 
     print_info "Checking for updates to Homebrew apps and casks..."
@@ -61,4 +60,4 @@ function update_brew_items {
 refresh_sudo
 update_brew_items
 
-print_colored "$GREEN" "Update completed"
+print_success "Update completed"

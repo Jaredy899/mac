@@ -6,7 +6,6 @@ eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/
 # Variables
 SSH_DIR="$HOME/.ssh"
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
-SSHD_CONFIG="/etc/ssh/sshd_config"
 
 # Function to configure sshd
 configure_sshd() {
@@ -121,6 +120,9 @@ show_ssh_menu() {
     show_menu_item 2 "$selected" "Enter your own public key"
 }
 
+# Initialize selected menu item
+selected=1
+
 # Main script
 ensure_ssh_setup
 
@@ -137,4 +139,4 @@ case $choice in
         ;;
 esac
 
-print_colored "$GREEN" "SSH key setup completed"
+print_success "SSH key setup completed"

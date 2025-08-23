@@ -4,8 +4,12 @@
 eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
 
 # Function to display a menu and get the user's choice
-function show_installer_menu {
+show_installer_menu() {
     print_info "Select category:"
+    # Initialize selected if not already set
+    if [ -z "$selected" ]; then
+        selected=1
+    fi
     show_menu_item 1 "$selected" "Browsers"
     show_menu_item 2 "$selected" "Communications"
     show_menu_item 3 "$selected" "Development"
@@ -16,38 +20,48 @@ function show_installer_menu {
     show_menu_item 8 "$selected" "Exit"
 }
 
-# Function to print apps in columns
-function print_columns {
-    local app_display=("$@")
-    local num_columns=3  # Number of columns to display
-    local num_apps=${#app_display[@]}
-    local rows=$(( (num_apps + num_columns - 1) / num_columns ))  # Calculate number of rows
+# Function to print apps in columns (POSIX compliant)
+print_columns() {
+    app_display="$*"
+    num_columns=3  # Number of columns to display
+    num_apps=$(echo "$app_display" | wc -w)
+    rows=$(( (num_apps + num_columns - 1) / num_columns ))  # Calculate number of rows
 
-    for (( i=0; i<$rows; i++ )); do
-        for (( j=0; j<$num_columns; j++ )); do
+    i=0
+    while [ $i -lt $rows ]; do
+        j=0
+        while [ $j -lt $num_columns ]; do
             index=$(( i + j * rows ))
-            if [ $index -lt $num_apps ]; then
+            if [ $index -lt "$num_apps" ]; then
+                # Get the app name from the list
+                app=$(echo "$app_display" | cut -d' ' -f $((index + 1)))
                 # Format the number with padding
-                num=$((index+1))
+                num=$((index + 1))
                 if [ $num -lt 10 ]; then
                     num_pad=" $num"
                 else
                     num_pad="$num"
                 fi
-                printf "  %s) %-25s" "$num_pad" "${app_display[$index]}"
+                printf "  %s) %-25s" "$num_pad" "$app"
             fi
+            j=$((j + 1))
         done
         echo
+        i=$((i + 1))
     done
 }
 
-# Function to install selected casks using normal arrays
-function install_casks {
-    local selected_numbers=("$@")
-    for number in "${selected_numbers[@]}"; do
-        if [ "$number" -ge 1 ] && [ "$number" -le ${#app_casks[@]} ]; then
-            local app_name="${app_casks[number-1]}"
-            if brew list --cask "$app_name" &>/dev/null; then
+# Function to install selected casks (POSIX compliant)
+install_casks() {
+    selected_numbers="$*"
+    num_casks=$(echo "$app_casks" | wc -w)
+
+    for number in $selected_numbers; do
+        # Check if number is valid
+        if echo "$number" | grep -q '^[0-9][0-9]*$' && [ "$number" -ge 1 ] && [ "$number" -le "$num_casks" ]; then
+            # Get the app name from the list
+            app_name=$(echo "$app_casks" | cut -d' ' -f "$number")
+            if brew list --cask "$app_name" > /dev/null 2>&1; then
                 print_warning "$app_name is already installed."
             else
                 print_info "Installing $app_name..."
@@ -71,66 +85,66 @@ while true; do
     case $choice in
         1)
             print_info "Browsers:"
-            app_display=("Arc" "Brave" "Google Chrome" "Chromium" "Edge" "Firefox" "Floorp" "LibreWolf" "Mullvad Browser" "Thorium Browser" "Tor Browser" "Ungoogled" "Vivaldi" "Waterfox" "Zen Browser")
-            app_casks=("arc" "brave-browser" "google-chrome" "chromium" "microsoft-edge" "firefox" "floorp" "Librewolf" "mullvad-browser" "alex313031-thorium" "tor-browser" "eloston-chromium" "vivaldi" "waterfox" "zen-browser")
-            print_columns "${app_display[@]}"
+            app_display="Arc Brave GoogleChrome Chromium Edge Firefox Floorp LibreWolf MullvadBrowser ThoriumBrowser TorBrowser Ungoogled Vivaldi Waterfox ZenBrowser"
+            app_casks="arc brave-browser google-chrome chromium microsoft-edge firefox floorp Librewolf mullvad-browser alex313031-thorium tor-browser eloston-chromium vivaldi waterfox zen-browser"
+            print_columns "$app_display"
             print_info "Enter the numbers of the browsers you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         2)
             print_info "Communications:"
-            app_display=("Chatterino" "Discord" "Ferdium" "Jami" "Element" "Signal" "Skype" "Microsoft Teams" "Telegram" "Thunderbird" "Viber" "Zoom" "Zulip")
-            app_casks=("chatterino" "discord" "ferdium" "jami" "element" "signal" "skype" "microsoft-teams" "telegram" "thunderbird" "viber" "zoom" "zulip")
-            print_columns "${app_display[@]}"
-            print_info "Enter the numbers of the utilities you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            app_display="Chatterino Discord Ferdium Jami Element Signal Skype MicrosoftTeams Telegram Thunderbird Viber Zoom Zulip"
+            app_casks="chatterino discord ferdium jami element signal skype microsoft-teams telegram thunderbird viber zoom zulip"
+            print_columns "$app_display"
+            print_info "Enter the numbers of the communication apps you want to install (separated by space): "
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         3)
             print_info "Development:"
-            app_display=("Anaconda" "CMake" "Docker Desktop" "Fork" "Git Butler" "GitHub Desktop" "Gitify" "GitKraken" "Godot Engine" "Miniconda" "OrbStack" "Postman" "Pulsar" "Sublime Merge" "Sublime Text" "Thonny Python IDE" "Vagrant" "VS Code" "VS Codium" "Wezterm" )
-            app_casks=("anaconda" "cmake" "docker" "fork" "gitbutler" "github" "gitify" "gitkraken" "godot" "miniconda" "orbstack" "postman" "pulsar" "sublime-merge" "sublime-text" "thonny" "vagrant" "visual-studio-code" "vscodium" "wezterm" )
-            print_columns "${app_display[@]}"
+            app_display="Anaconda CMake DockerDesktop Fork GitButler GitHubDesktop Gitify GitKraken GodotEngine Miniconda OrbStack Postman Pulsar SublimeMerge SublimeText ThonnyPythonIDE Vagrant VSCode VSCodium Wezterm"
+            app_casks="anaconda cmake docker fork gitbutler github gitify gitkraken godot miniconda orbstack postman pulsar sublime-merge sublime-text thonny vagrant visual-studio-code vscodium wezterm"
+            print_columns "$app_display"
             print_info "Enter the numbers of the development tools you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         4)
             print_info "Documents:"
-            app_display=("Adobe Acrobat Reader" "AFFiNE" "Anki" "Calibre" "Foxit PDF Editor" "Foxit Reader" "Joplin" "LibreOffice" "Logseq" "massCode" "NAPS2" "Obsidian" "ONLYOFFICE" "Apache OpenOffice" "PDFsam Basic" "Simplenote" "Znote" "Zotero")
-            app_casks=("adobe-acrobat-reader" "affine" "anki" "calibre" "foxit-pdf-editor" "foxitreader" "joplin" "libreoffice" "logseq" "masscode" "naps2" "obsidian" "onlyoffice" "openoffice" "pdfsam-basic" "simplenote" "znote" "zotero")
-            print_columns "${app_display[@]}"
-            print_info "Enter the numbers of the multimedia apps you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            app_display="AdobeAcrobatReader AFFiNE Anki Calibre FoxitPDFEditor FoxitReader Joplin LibreOffice Logseq massCode NAPS2 Obsidian ONLYOFFICE ApacheOpenOffice PDFsamBasic Simplenote Znote Zotero"
+            app_casks="adobe-acrobat-reader affine anki calibre foxit-pdf-editor foxitreader joplin libreoffice logseq masscode naps2 obsidian onlyoffice openoffice pdfsam-basic simplenote znote zotero"
+            print_columns "$app_display"
+            print_info "Enter the numbers of the document apps you want to install (separated by space): "
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         5)
             print_info "Games:"
-            app_display=("ATLauncher" "Clone Hero" "EA App" "Epic Games Launcher" "Heroic Games Launcher" "Moonlight" "PS Remote Play" "SideQuest" "Steam" "XEMU")
-            app_casks=("atlauncher" "clone-hero" "ea" "epic-games" "heroic" "moonlight" "sony-ps-remote-play" "sidequest" "steam" "xemu")
-            print_columns "${app_display[@]}"
-            print_info "Enter the numbers of the apps you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            app_display="ATLauncher CloneHero EAApp EpicGamesLauncher HeroicGamesLauncher Moonlight PSRemotePlay SideQuest Steam XEMU"
+            app_casks="atlauncher clone-hero ea epic-games heroic moonlight sony-ps-remote-play sidequest steam xemu"
+            print_columns "$app_display"
+            print_info "Enter the numbers of the games you want to install (separated by space): "
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         6)
             print_info "Multimedia:"
-            app_display=("Audacity" "Blender" "darktable" "draw.io" "foobar2000" "FreeCAD" "GIMP" "HandBrake" "Iina" "Inkscape" "Jellyfin Media Player" "Jellyfin Server" "Kdenlive" "KiCad" "Krita" "Mp3tag" "OBS" "Plex Media Server" "Plex Desktop" "Shotcut" "Spotify" "Tidal" "VLC" "XnViewMP" "Yt-dip")
-            app_casks=("audacity" "blender" "darktable" "drawio" "foobar2000" "freecad" "gimp" "handbrake" "iina" "inkscape" "jellyfin-media-player" "jellyfin" "kdenlive" "kicad" "krita" "mp3tag" "obs" "plex-media-server" "plex" "shotcut" "spotify" "tidal" "vlc" "xnviewmp" "yt-dip")
-            print_columns "${app_display[@]}"
-            print_info "Enter the numbers of the apps you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            app_display="Audacity Blender darktable drawio foobar2000 FreeCAD GIMP HandBrake Iina Inkscape JellyfinMediaPlayer JellyfinServer Kdenlive KiCad Krita Mp3tag OBS PlexMediaServer PlexDesktop Shotcut Spotify Tidal VLC XnViewMP Yt-dip"
+            app_casks="audacity blender darktable drawio foobar2000 freecad gimp handbrake iina inkscape jellyfin-media-player jellyfin kdenlive kicad krita mp3tag obs plex-media-server plex shotcut spotify tidal vlc xnviewmp yt-dip"
+            print_columns "$app_display"
+            print_info "Enter the numbers of the multimedia apps you want to install (separated by space): "
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         7)
             print_info "Utilities:"
-            app_display=("1Password" "Alacritty Terminal" "Alfred" "AnyDesk" "AppCleaner" "Barrier" "Bitwarden" "coconutBattery" "Commander One" "CopyQ" "Cpuinfo" "CustomShortcuts" "DevToys" "Dropbox" "Duplicati" "Espanso" "Etcher" "EtreCheck" "Find Any File" "f.lux" "Ghostty" "GrandPerspective" "Hidden Bar" "iTerm2" "Itsycal" "KeePassXC" "KeepingYouAwake" "Maccy" "Macs Fan Control" "Malwarebytes" "Memory Cleaner" "Microsoft Remote Desktop" "MonitorControl" "Motrix" "Mullvad VPN" "Nextcloud" "Numi" "OmniDiskSweeper" "OpenRBG" "Ollama" "onyX" "Orca Slicer" "ownCloud" "Parsec" "Podman Desktop" "PowerShell" "Raspberry Pi Imager" "Raycast" "Rectangle" "Renamer" "PrusaSlicer" "qBittorent" "Spacedrive File Manager" "Stats" "Syncthing" "Tabby.sh" "Tailscale" "TeamViewer" "Termius" "The Unarchiver" "Tiles" "Transmission" "UTM" "Warp" "Wireshark" "Xtreme Download Manager" "ZeroTier One" )
-            app_casks=("1password" "alacritty" "alfred" "anydesk" "appcleaner" "barrier" "bitwarden" "coconutbattery" "commander-one" "copyq" "cpuinfo" "customshortcuts" "devtoys" "dropbox" "duplicati" "espanso" "balenaetcher" "etrecheckpro" "find-any-file" "flux" "ghostty" "grandperspective" "hiddenbar" "iterm2" "itsycal" "keepassxc" "keepingyouawake" "maccy" "macs-fan-control" "malwarebytes" "memory-cleaner" "microsoft-remote-desktop" "monitorcontrol" "motrix" "mullvadvpn" "nextcloud" "numi" "omnidisksweeper" "openrgb" "ollama" "onyx" "orcaslicer" "owncloud" "parsec" "podman-desktop" "powershell" "raspberry-pi-imager" "raycast" "rectangle" "renamer" "prusaslicer" "qbittorrent" "spacedrive" "stats" "syncthing" "tabby" "tailscale" "teamviewer" "termius" "the-unarchiver" "tiles" "transmission" "utm" "warp" "wireshark" "xdm" "zerotier-one" )
-            print_columns "${app_display[@]}"
-            print_info "Enter the numbers of the apps you want to install (separated by space): "
-            read -a selected
-            install_casks "${selected[@]}"
+            app_display="1Password AlacrittyTerminal Alfred AnyDesk AppCleaner Barrier Bitwarden coconutBattery CommanderOne CopyQ Cpuinfo CustomShortcuts DevToys Dropbox Duplicati Espanso Etcher EtreCheck FindAnyFile f.lux Ghostty GrandPerspective HiddenBar iTerm2 Itsycal KeePassXC KeepingYouAwake Maccy MacsFanControl Malwarebytes MemoryCleaner MicrosoftRemoteDesktop MonitorControl Motrix MullvadVPN Nextcloud Numi OmniDiskSweeper OpenRBG Ollama onyX OrcaSlicer ownCloud Parsec PodmanDesktop PowerShell RaspberryPiImager Raycast Rectangle Renamer PrusaSlicer qBittorent SpacedriveFileManager Stats Syncthing Tabby.sh Tailscale TeamViewer Termius TheUnarchiver Tiles Transmission UTM Warp Wireshark XtremeDownloadManager ZeroTierOne"
+            app_casks="1password alacritty alfred anydesk appcleaner barrier bitwarden coconutbattery commander-one copyq cpuinfo customshortcuts devtoys dropbox duplicati espanso balenaetcher etrecheckpro find-any-file flux ghostty grandperspective hiddenbar iterm2 itsycal keepassxc keepingyouawake maccy macs-fan-control malwarebytes memory-cleaner microsoft-remote-desktop monitorcontrol motrix mullvadvpn nextcloud numi omnidisksweeper openrgb ollama onyx orcaslicer owncloud parsec podman-desktop powershell raspberry-pi-imager raycast rectangle renamer prusaslicer qbittorrent spacedrive stats syncthing tabby tailscale teamviewer termius the-unarchiver tiles transmission utm warp wireshark xdm zerotier-one"
+            print_columns "$app_display"
+            print_info "Enter the numbers of the utility apps you want to install (separated by space): "
+            read -r selected_input
+            install_casks "$selected_input"
             ;;
         8)
             print_info "Exiting..."
@@ -139,4 +153,4 @@ while true; do
     esac
 done
 
-print_colored "$GREEN" "Installer completed"
+print_success "Installer completed"

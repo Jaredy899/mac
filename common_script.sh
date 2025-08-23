@@ -7,7 +7,6 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
-GRAY='\033[0;37m'
 RC='\033[0m' # Reset color
 
 # Function to read keyboard input
@@ -32,7 +31,7 @@ handle_menu_selection() {
 
     cleanup() {
         stty "$saved_stty"
-        printf "\n${GREEN}Script terminated.${RC}\n"
+        printf "\n%sScript terminated.%s\n" "$GREEN" "$RC"
         exit 0
     }
 
@@ -47,31 +46,31 @@ handle_menu_selection() {
         # Call the function that displays menu items
         $3
 
-        printf "\n${MAGENTA}Use arrow keys to navigate, Enter to select, 'q' to exit${RC}\n"
+        printf "\n%sUse arrow keys to navigate, Enter to select, 'q' to exit%s\n" "$MAGENTA" "$RC"
 
         # Read keyboard input
         stty raw -echo
         key=$(dd bs=3 count=1 2>/dev/null)
         case "$key" in
-            $'\x1B\x5B\x41') # Up arrow
-                if [ $selected -eq 1 ]; then
-                    selected=$total_options
+            "$(printf '\033[A')") # Up arrow
+                if [ "$selected" -eq 1 ]; then
+                    selected="$total_options"
                 else
                     selected=$((selected - 1))
                 fi
                 ;;
-            $'\x1B\x5B\x42') # Down arrow
-                if [ $selected -eq $total_options ]; then
+            "$(printf '\033[B')") # Down arrow
+                if [ "$selected" -eq "$total_options" ]; then
                     selected=1
                 else
                     selected=$((selected + 1))
                 fi
                 ;;
-            $'\x0A'|$'\x0D') # Enter
+            "$(printf '\n')"|"$(printf '\r')") # Enter
                 stty "$saved_stty"
-                return $selected
+                return "$selected"
                 ;;
-            $'\x03') # Ctrl+C
+            "$(printf '\003')") # Ctrl+C
                 stty "$saved_stty"
                 cleanup
                 ;;
@@ -86,9 +85,9 @@ handle_menu_selection() {
 
 # Function to print colored text
 print_colored() {
-    local color=$1
-    local message=$2
-    printf "${color}%s${RC}\n" "$message"
+    color=$1
+    message=$2
+    printf "%s%s%s\n" "$color" "$message" "$RC"
 }
 
 # Function to print error message
