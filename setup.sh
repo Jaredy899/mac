@@ -2,7 +2,11 @@
 
 # Source the common script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
+if [ -f "$SCRIPT_DIR/common_script.sh" ]; then
+    . "$SCRIPT_DIR/common_script.sh"
+else
+    eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
+fi
 
 # Set the GITPATH variable to the directory where the script is located
 GITPATH="$SCRIPT_DIR"

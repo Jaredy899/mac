@@ -1,7 +1,12 @@
 #!/bin/sh
 
 # Source the common script
-eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$SCRIPT_DIR/common_script.sh" ]; then
+    . "$SCRIPT_DIR/common_script.sh"
+else
+    eval "$(curl -s https://raw.githubusercontent.com/Jaredy899/mac/refs/heads/main/common_script.sh)"
+fi
 
 # Variables
 SSH_DIR="$HOME/.ssh"

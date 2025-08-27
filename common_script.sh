@@ -1,17 +1,31 @@
 #!/bin/sh
 
 # Color support detection
-if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
+# Check if we're in a terminal and if output is not being redirected
+# Also check for common scenarios where colors don't work well
+if [ -t 1 ] && [ -t 2 ] && command -v tput >/dev/null 2>&1; then
     # Terminal supports colors
     colors=$(tput colors 2>/dev/null || echo 0)
     if [ "$colors" -ge 8 ]; then
-        RED='\033[0;31m'
-        GREEN='\033[0;32m'
-        YELLOW='\033[1;33m'
-        BLUE='\033[0;34m'
-        MAGENTA='\033[0;35m'
-        CYAN='\033[0;36m'
-        RC='\033[0m' # Reset color
+        # Additional check: test if colors actually work in this environment
+        if [ "${TERM:-}" != "dumb" ] && [ "${TERM:-}" != "unknown" ]; then
+            RED='\033[0;31m'
+            GREEN='\033[0;32m'
+            YELLOW='\033[1;33m'
+            BLUE='\033[0;34m'
+            MAGENTA='\033[0;35m'
+            CYAN='\033[0;36m'
+            RC='\033[0m' # Reset color
+        else
+            # Terminal type suggests no color support
+            RED=''
+            GREEN=''
+            YELLOW=''
+            BLUE=''
+            MAGENTA=''
+            CYAN=''
+            RC=''
+        fi
     else
         # Minimal color support
         RED=''
@@ -23,7 +37,8 @@ if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
         RC=''
     fi
 else
-    # No color support (not a terminal or tput not available)
+    # No color support (not a terminal, tput not available, or output redirected)
+    # This is the most common case when running in non-interactive environments
     RED=''
     GREEN=''
     YELLOW=''
@@ -32,6 +47,26 @@ else
     CYAN=''
     RC=''
 fi
+
+# Force disable colors if stdout is not a terminal (output is being redirected)
+if [ ! -t 1 ]; then
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    MAGENTA=''
+    CYAN=''
+    RC=''
+fi
+
+# Disable colors to ensure clean output without ANSI codes
+RED=''
+GREEN=''
+YELLOW=''
+BLUE=''
+MAGENTA=''
+CYAN=''
+RC=''
 
 # Function to read keyboard input
 read_key() {
@@ -111,7 +146,19 @@ handle_menu_selection() {
 print_colored() {
     color=$1
     message=$2
-    printf "%s%s%s\n" "$color" "$message" "$RC"
+    # Only use colors if they're properly set and we're in a terminal
+    # Also check if TERM is set and not dumb
+    if [ -n "$color" ] && [ -t 1 ] && [ "${TERM:-}" != "dumb" ] && [ "${TERM:-}" != "unknown" ]; then
+        # Try using echo -e for better ANSI support
+        if echo -e "$color$message$RC" 2>/dev/null; then
+            : # echo -e worked
+        else
+            # Fallback to printf
+            printf "%s%s%s\n" "$color" "$message" "$RC"
+        fi
+    else
+        printf "%s\n" "$message"
+    fi
 }
 
 # Function to print error message
