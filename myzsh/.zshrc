@@ -46,7 +46,24 @@ if command -v zsh-syntax-highlighting >/dev/null 2>&1; then
   source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-# -----------------------------------------
+# Update apps
+updatebrew() {
+  echo "🔄 Updating Homebrew..."
+  brew update
+
+  echo "⬆️  Upgrading formulae..."
+  brew upgrade
+
+  echo "⬆️  Upgrading casks (including :latest)..."
+  brew upgrade --cask --greedy
+
+  echo "🧹 Cleaning up..."
+  brew cleanup --prune=all
+  brew autoremove
+
+}
+
+#
 # Aliases (mac-only)
 # -----------------------------------------
 alias ezrc='nano ~/.zshrc'
@@ -54,17 +71,36 @@ alias da='date "+%Y-%m-%d %A %T %Z"'
 
 alias cp='cp -i'
 alias mv='mv -i'
-if command -v trash >/dev/null 2>&1; then
-  alias rm='trash -v'
-else
-  alias rm='rm -i'
-fi
 alias mkdir='mkdir -p'
 alias less='less -R'
 alias cls='clear'
 alias vi='nvim'
 alias svi='sudo nvim'
 alias vis='nvim "+set si"'
+
+rm() {
+  if command -v trash >/dev/null 2>&1; then
+    case "$*" in
+      *-r*|-f*|-rf*|-fr*)
+        command rm "$@"   # use real rm for recursive/force
+        ;;
+      *)
+        trash -v "$@"     # safe delete
+        ;;
+    esac
+  else
+    command rm "$@"       # fallback to system rm
+  fi
+}
+
+# Shortcut: rmd = rm -rf
+rmd() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: rmd <file|dir> [...]"
+    return 1
+  fi
+  command rm -rf "$@"
+}
 
 # eza for listings
 if command -v eza >/dev/null 2>&1; then
@@ -142,7 +178,7 @@ alias kssh="kitty +kitten ssh"
 
 # External scripts
 alias jc='bash <(curl -fsSL jaredcervantes.com/mac)'
-alias apps='bash <(curl -fsSL https://raw.githubusercontent.com/Jaredy899/mac/main/homebrew_scripts/brew_updater.sh)'
+alias apps='updatebrew'
 alias os='sh <(curl -fsSL jaredcervantes.com/os)'
 
 # DNS flush (mac)
@@ -211,9 +247,9 @@ preview() {
 
 if command -v fzf >/dev/null 2>&1; then
   if command -v bat >/dev/null 2>&1; then
-    alias nfzf='nano "$(fzf -m --preview=\"bat --color=always {}\")"'
+    alias nfzf='nano $(fzf -m --preview "bat --color=always {}")'
   else
-    alias nfzf='nano "$(fzf -m)"'
+    alias nfzf='nano $(fzf -m)'
   fi
 fi
 
@@ -317,5 +353,5 @@ whatsmyip() {
 # Fastfetch (run synchronously in interactive shells)
 # -----------------------------------------
 if [[ -o interactive ]] && command -v fastfetch >/dev/null 2>&1; then
-  fastfetch
+ fastfetch
 fi
