@@ -10,113 +10,113 @@
   },
 
   "display": {
-    "separator": "  "
+    "separator": "  "
   },
 
   "modules": [
     {
       "type": "custom",
-      "format": "\u001b[36m───  SYSTEM OVERVIEW  ───\u001b[0m"
+      "format": "\u001b[36m─── SYSTEM OVERVIEW ───\u001b[0m"
     },
     {
       "type": "host",
-      "key": "  󰌢 Host",
+      "key": "  󰌢",
       "keyColor": "red"
     },
     {
       "type": "cpu",
-      "key": "   CPU",
+      "key": "  ",
       "keyColor": "yellow"
     },
     {
       "type": "gpu",
       "detectionMethod": "pci",
-      "key": "   GPU",
+      "key": "  ",
       "keyColor": "green"
     },
     {
       "type": "display",
-      "key": "  󱄄 Display",
+      "key": "  󱄄",
       "keyColor": "cyan"
-  },
+    },
     {
       "type": "memory",
-      "key": "   RAM",
+      "key": "  ",
       "keyColor": "blue"
     },
     {
       "type": "disk",
-      "key": "   Disk",
+      "key": "  ",
       "keyColor": "magenta"
     },
     {
       "type": "battery",
-      "key": "   Battery",
+      "key": "  ",
       "keyColor": "red"
-  },
+    },
 
     {
       "type": "custom",
-      "format": "\u001b[32m───  SOFTWARE STACK  ───\u001b[0m"
+      "format": "\u001b[32m─── SOFTWARE STACK ───\u001b[0m"
     },
     {
       "type": "os",
-      "key": "   OS",
+      "key": "  ",
       "keyColor": "cyan"
     },
     {
       "type": "shell",
-      "key": "   Shell",
+      "key": "  ",
       "keyColor": "yellow"
     },
     {
       "type": "processes",
-      "key": "  󰧑 Processes",
+      "key": "  󰧑",
       "format": "{1} running",
       "keyColor": "green"
     },
     {
       "type": "packages",
-      "key": "   Packages",
+      "key": "  ",
       "keyColor": "magenta"
-  },
+    },
 
     {
       "type": "custom",
-      "format": "\u001b[33m───  NETWORK & TIME  ───\u001b[0m"
+      "format": "\u001b[33m─── NETWORK & TIME ───\u001b[0m"
     },
     {
       "type": "datetime",
-      "key": "   Date",
+      "key": "  ",
       "keyColor": "blue"
     },
     {
       "type": "localip",
       "showIpv6": false,
       "showMac": false,
-      "key": "  󰩠 LAN",
+      "key": "  󰩠",
       "keyColor": "magenta"
     },
     {
       "type": "command",
-      "key": "  󰩠 Tailscale",
+      "key": "  󰩠",
       "keyColor": "red",
-      "text": "if command -v tailscale >/dev/null 2>&1; then tailscale ip -4; else printf 'Not installed\\n'; fi"
+      "text": "command -v tailscale >/dev/null 2>&1 && tailscale ip -4"
     },
 
     {
       "type": "custom",
-      "format": "\u001b[35m───  SYSTEM STATUS  ───\u001b[0m"
+      "format": "\u001b[35m─── SYSTEM STATUS ───\u001b[0m"
     },
     {
       "type": "command",
-      "key": "  󰻀 OS Age",
+      "key": "  󰻀",
       "keyColor": "red",
       "text": "case \"$(uname -s)\" in Linux) birth=$(stat -c %W /);; Darwin) birth=$(stat -f %B /);; *) powershell -NoProfile -Command \"$d=(Get-CimInstance Win32_OperatingSystem).InstallDate; ((Get-Date)-$d).Days.ToString() + ' days'\"; exit 0;; esac; now=$(date +%s); days=$(( (now - birth) / 86400 )); printf \"%s days\\n\" \"$days\""
     },
     {
       "type": "uptime",
-      "key": "   Uptime",
+      "key": "  ",
       "format": "{1} days {2} hours {3} minutes",
       "keyColor": "green"
     },
